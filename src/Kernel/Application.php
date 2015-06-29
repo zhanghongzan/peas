@@ -24,7 +24,7 @@ class Application
      */
     public function __construct($basePath = null)
     {
-
+        date_default_timezone_set('PRC');
     }
 
     /**

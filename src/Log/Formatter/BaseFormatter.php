@@ -1,5 +1,5 @@
 <?php
-namespace Peas\Log\Formater;
+namespace Peas\Log\Formatter;
 
 /**
  * Peas Framework

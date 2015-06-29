@@ -1,7 +1,7 @@
 <?php
 namespace Peas\Log\Writer;
 
-use Peas\Log\Formater\FormatterInterface;
+use Peas\Log\Formatter\FormatterInterface;
 
 /**
  * Peas Framework

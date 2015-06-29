@@ -2,6 +2,7 @@
 namespace Peas\Log;
 
 use Peas\Support\Traits\ConfigTrait;
+use Peas\Log\Writer\WriterInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
@@ -32,13 +33,11 @@ class Logger extends AbstractLogger
     ];
 
     /**
-     * 日志写入实体类
+     * 等级名称和数字代码映射关系
      *
-     * @var unknown
+     * @var array
      */
-    private $_writers = [];
-
-    private $_levelCode = [
+    private static $_levelCode = [
         LogLevel::EMERGENCY => LOG_EMERG,
         LogLevel::ALERT     => LOG_ALERT,
         LogLevel::CRITICAL  => LOG_CRIT,
@@ -49,28 +48,58 @@ class Logger extends AbstractLogger
         LogLevel::DEBUG     => LOG_DEBUG,
     ];
 
+    /**
+     * 日志写入实体类
+     *
+     * @var WriterInterface
+     */
+    private $_writer = null;
+
 
     /**
-     * 存储的需要写入的日志信息
+     * 初始化
      *
-     * @var array
+     * @param WriterInterface $writer
      */
-    public $storage = [];
+    public function __construct(WriterInterface $writer = null)
+    {
+    	if (!is_null($writer)) {
+    		$this->setWriter($writer);
+    	}
+    }
 
+    /**
+     * 设置格式化类
+     *
+     * @param  WriterInterface $writer
+     * @return Logger
+     */
+    public function setWriter(WriterInterface $writer)
+    {
+        $this->_writer = $writer;
+        return $this;
+    }
 
     /**
      * 记录日志信息
      *
-     * @param  mixed $level
+     * @param  mixed  $level
      * @param  string $message
-     * @param  array $context
+     * @param  array  $context
      * @return void
      */
     public function log($level, $message, array $context = array())
     {
-        // noop
+        if (!$this->getConfig('record') || !in_array($level, $this->getConfig('recordLevel')) || is_null($this->_writer)) {
+        	return;
+        }
+        $logInfo = [
+            'datetime' => time(),
+            'level' => $level,
+            'levelCode' => self::$_levelCode[$level],
+            'message' => $message,
+            'context' => $context,
+        ];
+        $this->_writer->write($logInfo);
     }
-
-    public function setWriter()
-    {}
 }

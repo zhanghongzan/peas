@@ -41,12 +41,13 @@ class FileWriter extends AbstractWriter
      *     'fileSize'    => 20,  // 单位：M，单个日志文件大小限制，超过大小系统将自动备份
      * ]
      */
-    public function __construct(array $config)
+    public function __construct(array $config = [])
     {
         if (!empty($config)) {
             $this->setConfig($config);
         }
-        if (empty($this->getConfig('dir'))) {
+        $fileDir = $this->getConfig('dir');
+        if (empty($fileDir)) {
             $this->setConfig('dir', dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))) . '/storage/logs');
         }
         if ($this->getConfig('fileSize') < 1) {
