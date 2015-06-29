@@ -11,7 +11,6 @@ use Peas\Support\Traits\ConfigTrait;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-
 class Aes
 {
     use ConfigTrait;
