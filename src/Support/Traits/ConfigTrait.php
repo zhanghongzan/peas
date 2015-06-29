@@ -32,7 +32,7 @@ trait ConfigTrait
      *
      * @param  string|array $name 参数名|含有多个参数的数组
      * @param  mixed $value 参数值，$name为参数名时有效
-     * @return void
+     * @return self
      */
     public function setConfig($name, $value = null)
     {
@@ -44,6 +44,7 @@ trait ConfigTrait
         } else {
             $this->_config[$name] = $value;
         }
+        return $this;
     }
 
     /**
