@@ -1,7 +1,7 @@
 <?php
 namespace Peas\Log\Writer;
 
-use Peas\Log\Formatter\FormatterInterface;
+use Peas\Log\Formatter\LogFormatterInterface;
 
 /**
  * Peas Framework
@@ -11,20 +11,20 @@ use Peas\Log\Formatter\FormatterInterface;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-interface WriterInterface
+interface LogWriterInterface
 {
     /**
      * 设置格式化类
      *
-     * @param FormatterInterface $formatter
-     * @return WriterInterface
+     * @param LogFormatterInterface $formatter
+     * @return LogWriterInterface
      */
-    public function setFormatter(FormatterInterface $formatter);
+    public function setFormatter(LogFormatterInterface $formatter);
 
     /**
      * 设置格式化类
      *
-     * @return FormatterInterface
+     * @return LogFormatterInterface
      */
     public function getFormatter();
 

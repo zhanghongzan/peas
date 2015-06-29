@@ -2,7 +2,7 @@
 namespace Peas\Log\Writer;
 
 use Peas\Log\Formatter\BaseFormatter;
-use Peas\Log\Formatter\FormatterInterface;
+use Peas\Log\Formatter\LogFormatterInterface;
 
 /**
  * Peas Framework
@@ -12,12 +12,12 @@ use Peas\Log\Formatter\FormatterInterface;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-abstract class AbstractWriter implements WriterInterface
+abstract class AbstractWriter implements LogWriterInterface
 {
     /**
      * 格式化类
      *
-     * @var FormatterInterface
+     * @var LogFormatterInterface
      */
     protected $_formatter;
 
@@ -25,10 +25,10 @@ abstract class AbstractWriter implements WriterInterface
     /**
      * 设置格式化类
      *
-     * @param FormatterInterface $formatter
-     * @return WriterInterface
+     * @param LogFormatterInterface $formatter
+     * @return LogWriterInterface
      */
-    public function setFormatter(FormatterInterface $formatter)
+    public function setFormatter(LogFormatterInterface $formatter)
     {
         $this->_formatter = $formatter;
         return $this;
@@ -37,7 +37,7 @@ abstract class AbstractWriter implements WriterInterface
     /**
      * 设置格式化类
      *
-     * @return FormatterInterface
+     * @return LogFormatterInterface
     */
     public function getFormatter()
     {

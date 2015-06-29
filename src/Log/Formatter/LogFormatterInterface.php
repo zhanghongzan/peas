@@ -9,7 +9,7 @@ namespace Peas\Log\Formatter;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-interface FormatterInterface
+interface LogFormatterInterface
 {
     /**
      * 格式化一条日志信息
