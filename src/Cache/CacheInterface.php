@@ -9,7 +9,7 @@ namespace Peas\Cache;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-Interface CacheDriverInterface
+Interface CacheInterface
 {
     /**
      * 删除缓存
