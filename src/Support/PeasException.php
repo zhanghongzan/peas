@@ -1,8 +1,6 @@
 <?php
 namespace Peas\Support;
 
-use Psr\Log\LoggerInterface;
-
 /**
  * Peas Framework
  *
@@ -23,7 +21,7 @@ class PeasException extends \Exception
     /**
      * 日志写入类，设置了之后，未捕获的异常、调用printToLog方法、printTraceToLog方法可以将异常写入日志
      *
-     * @var LoggerInterface
+     * @var Psr\Log\LoggerInterface
      */
     private static $_logger = null;
 
@@ -98,10 +96,10 @@ class PeasException extends \Exception
     /**
      * 设置日志写入类，设置了之后，未捕获的异常、调用printToLog方法、printTraceToLog方法可以将异常写入日志
      *
-     * @param  LoggerInterface $logger 日志写入类，需要实现Psr\Log\LoggerInterface接口
+     * @param  Psr\Log\LoggerInterface $logger 日志写入类，需要实现Psr\Log\LoggerInterface接口
      * @return void
      */
-    public static function setLogger(LoggerInterface $logger)
+    public static function setLogger($logger)
     {
     	self::$_logger = $logger;
     }
