@@ -302,7 +302,7 @@ class BitmapCaptcha
             for ($k = 0, $j = $this->width - 2 * $this->borderWidth; $k < $j; $k ++) {
                 if ($dots[$i][$k] > 0) {
                     echo $fontColors[$dots[$i][$k] - 1];
-                } else if ($dots[$i][$k] == 0) {
+                } elseif ($dots[$i][$k] == 0) {
                     echo ($this->_rand(0, $this->_disturbNum - 1) == 0) ? $this->_getColors(1, '', 66) : $backgroundColor;
                 } else {
                     echo $disturbColor[abs($dots[$i][$k]) - 1];
@@ -421,9 +421,9 @@ class BitmapCaptcha
         for ($i = 0; $i < $dotsHeight; $i ++) {
             if ($i < $moveBeginLine) {
                 $moveFrontNum[$i] = 0;
-            } else if ($maxMoveWidth == 0) {
+            } elseif ($maxMoveWidth == 0) {
                 $moveFrontNum[$i] = 0;
-            } else if ($this->deformComplexity) {
+            } elseif ($this->deformComplexity) {
                 $currentMoveWay = ($currentMoveNum == 0) ? 1 : (($currentMoveNum == $maxMoveWidth) ? -1 : $currentMoveWay);
                 $moveFrontNum[$i] = $currentMoveNum = $currentMoveNum + $currentMoveWay;
             } else {
