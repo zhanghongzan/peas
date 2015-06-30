@@ -1,4 +1,8 @@
 <?php
+namespace Peas\Support;
+
+use Psr\Log\LoggerInterface;
+
 /**
  * Peas Framework
  *
@@ -7,7 +11,6 @@
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-
 class PeasException extends \Exception
 {
     /**
@@ -15,7 +18,14 @@ class PeasException extends \Exception
      *
      * @var array
      */
-    public static $_exceptions = array();
+    public static $exceptions = [];
+
+    /**
+     * 日志写入类，设置了之后，未捕获的异常、调用printToLog方法、printTraceToLog方法可以将异常写入日志
+     *
+     * @var LoggerInterface
+     */
+    private static $_logger = null;
 
 
     /**
@@ -41,12 +51,23 @@ class PeasException extends \Exception
     }
 
     /**
+     * 输出信息到日志
+     *
+     * @return void
+     */
+    public function printTraceToLog()
+    {
+        self::printToLog($this);
+    }
+
+
+    /**
      * 格式化异常信息
      *
-     * @param  Exception $e 异常
+     * @param  \Exception $e 异常
      * @return string 格式化的异常信息
      */
-    public static function toString(Exception $e)
+    public static function toString(\Exception $e)
     {
         $infoArr = self::getExceptionInfo($e);
         $infoStr = $infoArr['time'] . ' ' . $infoArr['name'] . '['.$infoArr['code'].']:' . $infoArr['message'];
@@ -57,12 +78,12 @@ class PeasException extends \Exception
     /**
      * 获取数组形式的异常信息
      *
-     * @param  Exception $e 异常
+     * @param  \Exception $e 异常
      * @return array 异常信息数组
      */
-    public static function getExceptionInfo(Exception $e)
+    public static function getExceptionInfo(\Exception $e)
     {
-        $eInfo = array();
+        $eInfo = [];
         $eInfo['time']        = date("Y-m-d H:i:m");
         $eInfo['name']        = get_class($e);
         $eInfo['message']     = $e->getMessage();
@@ -75,14 +96,38 @@ class PeasException extends \Exception
     }
 
     /**
-     * 自定义捕捉异常方法，用于捕捉未使用try...catch捕获的异常
+     * 设置日志写入类，设置了之后，未捕获的异常、调用printToLog方法、printTraceToLog方法可以将异常写入日志
      *
-     * @param  Exception $e
+     * @param  LoggerInterface $logger 日志写入类，需要实现Psr\Log\LoggerInterface接口
      * @return void
      */
-    public static function _handler(Exception $e)
+    public static function setLogger(LoggerInterface $logger)
     {
-        array_push(self::$_exceptions, $e);
+    	self::$_logger = $logger;
+    }
+
+    /**
+     * 自定义捕捉异常方法，可用于捕捉未使用try...catch捕获的异常
+     *
+     * @param  \Exception $e
+     * @return void
+     */
+    public static function handler(\Exception $e)
+    {
+        array_push(self::$exceptions, $e);
         self::printToLog($e);
+    }
+
+    /**
+     * 输出异常信息到日志
+     *
+     * @param  \Exception $e 异常
+     * @return void
+     */
+    public static function printToLog(\Exception $e)
+    {
+        if (self::$_logger) {
+            self::$_logger->warning(self::toString($e));
+        }
     }
 }
