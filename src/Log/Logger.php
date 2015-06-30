@@ -63,9 +63,9 @@ class Logger extends AbstractLogger
      */
     public function __construct(LogWriterInterface $writer = null)
     {
-    	if (!is_null($writer)) {
-    		$this->setWriter($writer);
-    	}
+        if (!is_null($writer)) {
+            $this->setWriter($writer);
+        }
     }
 
     /**
@@ -91,7 +91,7 @@ class Logger extends AbstractLogger
     public function log($level, $message, array $context = array())
     {
         if (!$this->getConfig('record') || !in_array($level, $this->getConfig('recordLevel')) || is_null($this->_writer)) {
-        	return;
+            return;
         }
         $logInfo = [
             'datetime' => time(),

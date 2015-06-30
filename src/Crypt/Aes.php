@@ -28,11 +28,11 @@ class Aes
         'defaultKey' => '',             // 默认密钥，加解密时未传入密钥则使用默认
     ];
 
-	/**
-	 * 参数对照
-	 *
-	 * @var array
-	 */
+    /**
+     * 参数对照
+     *
+     * @var array
+     */
     private static $_modeInfo = [
         'cipher' => [
             '_128' => MCRYPT_RIJNDAEL_128,
@@ -78,7 +78,7 @@ class Aes
     public function __construct(array $config = [])
     {
         if (!empty($config)) {
-        	$this->setConfig($config);
+            $this->setConfig($config);
         }
     }
 
@@ -90,10 +90,10 @@ class Aes
      */
     public function createIv()
     {
-    	$iv = md5(microtime() . mt_rand());
-    	$blockSize = $this->getConfig('blockSize');
-    	$this->iv = $blockSize == 256 ? $iv : ($blockSize == 192 ? substr($iv, mt_rand(0, 7), 24) : substr($iv, mt_rand(0, 15), 16));
-    	return $this->iv;
+        $iv = md5(microtime() . mt_rand());
+        $blockSize = $this->getConfig('blockSize');
+        $this->iv = $blockSize == 256 ? $iv : ($blockSize == 192 ? substr($iv, mt_rand(0, 7), 24) : substr($iv, mt_rand(0, 15), 16));
+        return $this->iv;
     }
 
     /**
@@ -106,12 +106,12 @@ class Aes
      */
     public function encode($data, $key = null, $iv = null)
     {
-    	$cipher  = self::$_modeInfo['cipher']['_' . $this->getConfig('blockSize')];
-    	$padding = self::$_modeInfo['padding'][strtolower($this->getConfig('padding'))];
-    	$mode    = self::$_modeInfo['mode'][$this->getConfig('mode')];
+        $cipher  = self::$_modeInfo['cipher']['_' . $this->getConfig('blockSize')];
+        $padding = self::$_modeInfo['padding'][strtolower($this->getConfig('padding'))];
+        $mode    = self::$_modeInfo['mode'][$this->getConfig('mode')];
 
-    	$key = empty($key) ? $this->getConfig('key') : $key;
-    	$iv  = empty($iv)  ? $this->createIv() : $iv;
+        $key = empty($key) ? $this->getConfig('key') : $key;
+        $iv  = empty($iv)  ? $this->createIv() : $iv;
 
         $cipherText = mcrypt_encrypt($cipher, $key, Padding::$padding($data), $mode, $iv);
         return $this->getConfig('base64') ? base64_encode($cipherText) : $cipherText;

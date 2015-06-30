@@ -193,7 +193,7 @@ class BitmapCaptcha
      */
     private function _getFullDotsArray($dots, $strLen, $lineNum)
     {
-    	$width  = $this->width  - 2 * $this->borderWidth;
+        $width  = $this->width  - 2 * $this->borderWidth;
         $height = $this->height - 2 * $this->borderWidth;
 
         /*计算需要填充的宽度*/
@@ -205,7 +205,7 @@ class BitmapCaptcha
         for ($i = 0; $i < $this->_dotsMaxHeight; $i ++) {
             $result[$i] = array();
             for ($j = 0; $j < $fillLeft; $j ++) {
-            	$result[$i][] = 0;
+                $result[$i][] = 0;
             }
             for ($j = 0; $j < $strLen; $j ++) {
                 for ($k = 0; $k < $this->_dotsMaxWidth; $k ++) {
@@ -301,7 +301,7 @@ class BitmapCaptcha
             $this->_echoColorPoint($this->borderWidth, $borderColor);
             for ($k = 0, $j = $this->width - 2 * $this->borderWidth; $k < $j; $k ++) {
                 if ($dots[$i][$k] > 0) {
-                	echo $fontColors[$dots[$i][$k] - 1];
+                    echo $fontColors[$dots[$i][$k] - 1];
                 } else if ($dots[$i][$k] == 0) {
                     echo ($this->_rand(0, $this->_disturbNum - 1) == 0) ? $this->_getColors(1, '', 66) : $backgroundColor;
                 } else {

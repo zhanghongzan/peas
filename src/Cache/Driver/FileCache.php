@@ -44,7 +44,7 @@ class FileCache implements CacheInterface
     public function init(array $config = [])
     {
         foreach ($config as $key => $val) {
-        	$this->{$key} = $val;
+            $this->{$key} = $val;
         }
         if (empty($this->fileDir)) {
             $this->fileDir = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))) . '/storage/framework/cache';

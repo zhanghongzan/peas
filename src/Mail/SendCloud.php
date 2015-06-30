@@ -31,9 +31,9 @@ class SendCloud
      */
     public function __construct(array $config = [])
     {
-    	if (!empty($config)) {
-    		$this->setConfig($config);
-    	}
+        if (!empty($config)) {
+            $this->setConfig($config);
+        }
     }
 
     /**

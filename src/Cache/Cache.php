@@ -26,9 +26,9 @@ class Cache
      */
     public function __construct(CacheInterface $defaultDriver = null)
     {
-    	if ($defaultDriver) {
-    	    $this->setDriver('default', $defaultDriver);
-    	}
+        if ($defaultDriver) {
+            $this->setDriver('default', $defaultDriver);
+        }
     }
 
 
@@ -41,7 +41,7 @@ class Cache
      */
     public function setDriver($name, CacheInterface $driver)
     {
-    	$this->_drivers[$name] = $driver;
+        $this->_drivers[$name] = $driver;
     }
 
     /**
@@ -52,7 +52,7 @@ class Cache
      */
     public function getDriver($name)
     {
-    	return isset($this->_drivers[$name]) ? $this->_drivers[$name] : null;
+        return isset($this->_drivers[$name]) ? $this->_drivers[$name] : null;
     }
 
 
@@ -64,7 +64,7 @@ class Cache
      */
     public function remove($id)
     {
-    	return $this->getDriver('default')->remove($id);
+        return $this->getDriver('default')->remove($id);
     }
 
     /**
@@ -98,7 +98,7 @@ class Cache
     */
     public function get($id)
     {
-    	return $this->getDriver('default')->get($id);
+        return $this->getDriver('default')->get($id);
     }
 
     /**
@@ -109,6 +109,6 @@ class Cache
     */
     public function test($id)
     {
-    	return $this->getDriver('default')->test($id);
+        return $this->getDriver('default')->test($id);
     }
 }

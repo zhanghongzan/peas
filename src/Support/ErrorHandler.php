@@ -51,7 +51,7 @@ class ErrorHandler
      */
     public static function setCallback($callback)
     {
-    	self::$_callback = $callback;
+        self::$_callback = $callback;
     }
 
     /**

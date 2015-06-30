@@ -30,12 +30,12 @@ class ApcCache implements CacheInterface
     public function init(array $config = [])
     {
         if (!function_exists('apc_cache_info')) {
-        	return false;
+            return false;
         }
-    	if (isset($config['defaultLifetime'])) {
-    	    $this->defaultLifetime = $config['defaultLifetime'];
-    	}
-    	return true;
+        if (isset($config['defaultLifetime'])) {
+            $this->defaultLifetime = $config['defaultLifetime'];
+        }
+        return true;
     }
 
     /**

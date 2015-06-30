@@ -45,7 +45,7 @@ class PeasException extends \Exception
      */
     public function __toString()
     {
-    	return self::toString($this);
+        return self::toString($this);
     }
 
     /**
@@ -101,7 +101,7 @@ class PeasException extends \Exception
      */
     public static function setLogger($logger)
     {
-    	self::$_logger = $logger;
+        self::$_logger = $logger;
     }
 
     /**
