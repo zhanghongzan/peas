@@ -47,7 +47,7 @@ class FileCache implements CacheInterface
         	$this->{$key} = $val;
         }
         if (empty($this->fileDir)) {
-            $this->fileDir = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))) . '/framework/cache';
+            $this->fileDir = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))) . '/storage/framework/cache';
         }
         return true;
     }
