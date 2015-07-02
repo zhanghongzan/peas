@@ -63,7 +63,7 @@ class XCacheStore implements StoreInterface
     public function set($id, $value, $specificLifetime = false)
     {
         $lifetime = $specificLifetime === false ? $this->defaultLifetime : $specificLifetime;
-        return xcache_set($id, array($value, time()), $lifetime);
+        return xcache_set($id, [$value, time()], $lifetime);
     }
 
     /**

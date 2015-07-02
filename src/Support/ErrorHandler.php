@@ -16,7 +16,7 @@ class ErrorHandler
      *
      * @var array
      */
-    public static $errors = array();
+    public static $errors = [];
 
 
     /**

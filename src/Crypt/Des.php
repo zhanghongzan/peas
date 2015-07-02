@@ -32,22 +32,22 @@ class Des
      *
      * @var array
      */
-    private static $_modeInfo = array(
-        'mode' => array(
+    private static $_modeInfo = [
+        'mode' => [
             'cbc'    => MCRYPT_MODE_CBC,
             'cfb'    => MCRYPT_MODE_CFB,
             'ecb'    => MCRYPT_MODE_ECB,
             'nofb'   => MCRYPT_MODE_NOFB,
             'ofb'    => MCRYPT_MODE_OFB,
             'stream' => MCRYPT_MODE_STREAM,
-        ),
-        'padding' => array(
+        ],
+        'padding' => [
             'pkcs5padding'    => 'PKCS5Padding',
             'pkcs7padding'    => 'PKCS7Padding',
             'nopadding'       => 'NoPadding',
             'iso10126padding' => 'ISO10126Padding',
-        )
-    );
+        ]
+    ];
 
 
     /**

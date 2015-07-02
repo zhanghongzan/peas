@@ -67,7 +67,7 @@ class SendCloud
             'subject'  => $subject,
             'html'     => $html,
         );
-        $options = array('http' => array('method'  => 'POST', 'content' => http_build_query($param)));
+        $options = ['http' => ['method'  => 'POST', 'content' => http_build_query($param)]];
         $context = stream_context_create($options);
         return file_get_contents($this->getConfig('apiUrl'), false, $context);
     }

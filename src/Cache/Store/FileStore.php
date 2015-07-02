@@ -88,7 +88,7 @@ class FileStore implements StoreInterface
         $lifetime  = $specificLifetime === false ? $this->defaultLifetime : $specificLifetime;
         $validTime = $lifetime == -1 ? -1 : time() + $lifetime;
 
-        $data = array('valid' => $validTime, 'data' => $value);
+        $data = ['valid' => $validTime, 'data' => $value];
         $writeData = $this->compress && function_exists('gzcompress') ? gzcompress(serialize($data), 3) : serialize($data);
 
         if (file_put_contents($this->_getFilePath($id), $writeData)) {

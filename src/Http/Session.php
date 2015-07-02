@@ -96,7 +96,7 @@ class Session
      */
     public static function clear()
     {
-        $_SESSION = array();
+        $_SESSION = [];
     }
 
     /**

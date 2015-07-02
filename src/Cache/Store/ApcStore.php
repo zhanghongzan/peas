@@ -67,7 +67,7 @@ class ApcStore implements StoreInterface
     public function set($id, $value, $specificLifetime = false)
     {
         $lifetime = $specificLifetime === false ? $this->defaultLifetime : $specificLifetime;
-        return apc_store($id, array($value, time()), $lifetime);
+        return apc_store($id, [$value, time()], $lifetime);
     }
 
     /**

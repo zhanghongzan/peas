@@ -91,12 +91,12 @@ class IpLocation
      * 根据所给IP地址或域名返回所在地区信息
      *
      * @param  string $ipOrDomain IP地址或域名，默认为空表示当前访问IP
-     * @return array array(
+     * @return array [
      *     'ip'      => '当前解析的IP',
      *     'country' => '国家信息',
      *     'area'    => '地区信息',
      *     'beginip' => 'IP所在范围的开始地址',
-     *     'endip'   => 'IP所在范围的结束地址')
+     *     'endip'   => 'IP所在范围的结束地址']
      */
     public function getLocation($ipOrDomain = '')
     {
@@ -156,7 +156,7 @@ class IpLocation
      * 根据所给IP地址或域名返回所在地区信息
      *
      * @param  string $ip IP地址或域名
-     * @return array array('ip'=>'', 'country'=>'', 'area'=>'')
+     * @return array ['ip'=>'', 'country'=>'', 'area'=>'']
      */
     private function _getLocation($ip)
     {

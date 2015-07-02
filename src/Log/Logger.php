@@ -88,7 +88,7 @@ class Logger extends AbstractLogger
      * @param  array  $context
      * @return void
      */
-    public function log($level, $message, array $context = array())
+    public function log($level, $message, array $context = [])
     {
         if (!$this->getConfig('record') || !in_array($level, $this->getConfig('recordLevel')) || is_null($this->_writer)) {
             return;
