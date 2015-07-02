@@ -1,6 +1,8 @@
 <?php
 namespace Peas\View\Compiler;
 
+use Peas\View\CornException;
+
 /**
  * Peas Framework
  *
