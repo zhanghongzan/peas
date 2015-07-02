@@ -2,7 +2,7 @@
 namespace Peas\Log;
 
 use Peas\Support\Traits\ConfigTrait;
-use Peas\Log\Writer\LogWriterInterface;
+use Peas\Log\Writer\WriterInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
@@ -51,7 +51,7 @@ class Logger extends AbstractLogger
     /**
      * 日志写入实体类
      *
-     * @var LogWriterInterface
+     * @var WriterInterface
      */
     private $_writer = null;
 
@@ -59,9 +59,9 @@ class Logger extends AbstractLogger
     /**
      * 初始化
      *
-     * @param LogWriterInterface $writer
+     * @param WriterInterface $writer
      */
-    public function __construct(LogWriterInterface $writer = null)
+    public function __construct(WriterInterface $writer = null)
     {
         if (!is_null($writer)) {
             $this->setWriter($writer);
@@ -71,10 +71,10 @@ class Logger extends AbstractLogger
     /**
      * 设置格式化类
      *
-     * @param  LogWriterInterface $writer
+     * @param  WriterInterface $writer
      * @return Logger
      */
-    public function setWriter(LogWriterInterface $writer)
+    public function setWriter(WriterInterface $writer)
     {
         $this->_writer = $writer;
         return $this;
