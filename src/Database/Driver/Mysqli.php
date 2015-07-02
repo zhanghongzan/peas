@@ -1,4 +1,6 @@
 <?php
+namespace Peas\Database\Driver;
+
 /**
  * Peas Framework
  *
@@ -7,22 +9,21 @@
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-
-class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
+class Mysqli implements DriverInterface
 {
     /**
      * 数据库连接
      *
      * @var resource
      */
-    private $_link = NULL;
+    private $_link = null;
 
     /**
      * 当前查询标识符
      *
      * @var resource
      */
-    private $_queryId = NULL;
+    private $_queryId = null;
 
     /**
      * 最近执行的SQL语句
@@ -49,17 +50,25 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     /**
      * 初始化连接
      *
-     * @param array $config 配置参数
-     * @throws Peas_System_Db_Exception 201:不支持mysqli时抛出，202:连接数据库出错时抛出
+     * @param array $config 配置参数 [
+     *     'host'      => 'localhost', // 服务器地址
+     *     'port'      => 3306,        // 端口
+     *     'username'  => 'root',      // 用户名
+     *     'password'  => 'admin',     // 密码
+     *     'database'  => 'peas',      // 数据库名
+     *     'charset'   => 'utf8',      // 数据库编码默认采用utf8
+     *     'pcconnect' => false,       // 持久连接
+     * ]
+     * @throws DbException 201:不支持mysqli时抛出，202:连接数据库出错时抛出
      */
-    public function __construct($config)
+    public function __construct(array $config = [])
     {
         if (!class_exists('mysqli')) {
-            throw new Peas_System_Db_Exception('[Db]不支持mysqli', 201);
+            throw new DbException('[Db]不支持mysqli', 201);
         }
         $this->_link = new mysqli($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
         if (mysqli_connect_errno()) {
-            throw new Peas_System_Db_Exception('[MySqli]连接数据库[' . $config['host'] . '.' . $config['database'] . ']出错：' . mysqli_connect_error(), 202);
+            throw new DbException('[MySqli]连接数据库[' . $config['host'] . '.' . $config['database'] . ']出错：' . mysqli_connect_error(), 202);
         }
         if ($this->getVersion() > '4.1') {
             $this->_link->query("SET NAMES '" . $config['charset'] . "'");
@@ -78,7 +87,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getVersion()
+     * @see DbInterface::getVersion()
      */
     public function getVersion()
     {
@@ -89,7 +98,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getLink()
+     * @see DbInterface::getLink()
      */
     public function getLink()
     {
@@ -97,7 +106,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getError()
+     * @see DbInterface::getError()
      */
     public function getError()
     {
@@ -105,7 +114,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getSql()
+     * @see DbInterface::getSql()
      */
     public function getSql()
     {
@@ -117,29 +126,29 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
      *
      * @param  string $sql
      * @return resource
-     * @throws Peas_System_Db_Exception 204 执行失败时抛出
+     * @throws DbException 204 执行失败时抛出
      */
     private function _doExecute($sql)
     {
         if (!$this->_link) {
-            throw new Peas_System_Db_Exception('[MySqli]SQL执行失败：数据库连接有误', 204);
+            throw new DbException('[MySqli]SQL执行失败：数据库连接有误', 204);
         }
         if ($this->_queryId) {
             $this->free();
         }
-        $startTime = microtime(TRUE);
+        $startTime = microtime(true);
         $result = $this->_link->query($sql);
-        Peas_System_Db::_debug($sql, $startTime, microtime(TRUE));
+        Peas_System_Db::_debug($sql, $startTime, microtime(true));
 
-        if (FALSE === $result) {
-            throw new Peas_System_Db_Exception('[MySqli]SQL执行失败：' . $this->getError(), 204);
+        if (false === $result) {
+            throw new DbException('[MySqli]SQL执行失败：' . $this->getError(), 204);
         }
         $this->_sql = $sql;
         return $result;
     }
 
     /**
-     * @see Peas_System_Db_Interface::execute()
+     * @see DbInterface::execute()
      */
     public function execute($sql)
     {
@@ -193,7 +202,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getNumRows()
+     * @see DbInterface::getNumRows()
      */
     public function getNumRows($sql)
     {
@@ -201,7 +210,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::select()
+     * @see DbInterface::select()
      */
     public function select($sql)
     {
@@ -210,7 +219,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::selectForObject()
+     * @see DbInterface::selectForObject()
      */
     public function selectForObject($sql, $className = '', $params = array())
     {
@@ -219,7 +228,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::update()
+     * @see DbInterface::update()
      */
     public function update($sql)
     {
@@ -227,7 +236,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::delete()
+     * @see DbInterface::delete()
      */
     public function delete($sql)
     {
@@ -235,7 +244,7 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::insert()
+     * @see DbInterface::insert()
      */
     public function insert($sql)
     {
@@ -244,36 +253,36 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::rollback()
+     * @see DbInterface::rollback()
      */
     public function rollback()
     {
         if ($this->_transTimes > 0) {
             $result = $this->_link->rollback();
             if(!$result) {
-                throw new Peas_System_Db_Exception('[MySqli]事务回滚失败：' . $this->getError(), 206);
+                throw new DbException('[MySqli]事务回滚失败：' . $this->getError(), 206);
             }
             $this->_transTimes = 0;
         }
     }
 
     /**
-     * @see Peas_System_Db_Interface::startTrans()
+     * @see DbInterface::startTrans()
      */
     public function startTrans()
     {
         if (!$this->_link) {
-            return FALSE;
+            return false;
         }
         if ($this->_transTimes == 0) {
             $this->_link->autocommit(false);
         }
         $this->_transTimes++;
-        return TRUE;
+        return true;
     }
 
     /**
-     * @see Peas_System_Db_Interface::commit()
+     * @see DbInterface::commit()
      */
     public function commit()
     {
@@ -281,23 +290,23 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
             $result = $this->_link->commit();
             $this->_link->autocommit(true);
             if(!$result){
-                throw new Peas_System_Db_Exception('[MySqli]事务提交失败：' . $this->getError(), 205);
+                throw new DbException('[MySqli]事务提交失败：' . $this->getError(), 205);
             }
             $this->_transTimes = 0;
         }
     }
 
     /**
-     * @see Peas_System_Db_Interface::free()
+     * @see DbInterface::free()
      */
     public function free()
     {
         @mysqli_free_result($this->_queryId);
-        $this->_queryId = NULL;
+        $this->_queryId = null;
     }
 
     /**
-     * @see Peas_System_Db_Interface::close()
+     * @see DbInterface::close()
      */
     public function close()
     {
@@ -305,13 +314,13 @@ class Peas_System_Db_Mysqli implements Peas_System_Db_Interface
             $this->_queryId->free_result();
         }
         if ($this->_link && !$this->_link->close()) {
-            throw new Peas_System_Db_Exception('[MySqli]关闭连接失败：' . $this->getError(), 203);
+            throw new DbException('[MySqli]关闭连接失败：' . $this->getError(), 203);
         }
-        $this->_link = NULL;
+        $this->_link = null;
     }
 
     /**
-     * @see Peas_System_Db_Interface::escapeString()
+     * @see DbInterface::escapeString()
      */
     public function escapeString($str)
     {

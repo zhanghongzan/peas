@@ -9,7 +9,7 @@ namespace Peas\Database\Driver;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-interface DatabaseDriverInterface
+interface DriverInterface
 {
     /**
      * 获取数据库版本信息
