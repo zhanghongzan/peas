@@ -73,7 +73,7 @@ class Cache
      * 清空所有缓存记录
      *
      * @return boolean 成功返回true，失败返回false
-    */
+     */
     public function clear()
     {
         return $this->getStore('default')->clear();
@@ -86,7 +86,7 @@ class Cache
      * @param  mixed  $value 缓存值
      * @param  int    $specificLifetime 缓存有效期（秒），false时表示使用默认
      * @return boolean 成功返回true，失败返回false
-    */
+     */
     public function set($id, $value, $specificLifetime = false)
     {
         return $this->getStore('default')->set($id, $value, $specificLifetime);
@@ -97,7 +97,7 @@ class Cache
      *
      * @param  string $id 缓存ID
      * @return mixed|false 成功返回缓存数据，失败返回false
-    */
+     */
     public function get($id)
     {
         return $this->getStore('default')->get($id);
@@ -108,7 +108,7 @@ class Cache
      *
      * @param  string $id 缓存ID
      * @return int|false 有效时返回最后更新时间的时间戳，无效返回false
-    */
+     */
     public function test($id)
     {
         return $this->getStore('default')->test($id);
