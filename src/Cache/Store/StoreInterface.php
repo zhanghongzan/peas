@@ -1,5 +1,5 @@
 <?php
-namespace Peas\Cache;
+namespace Peas\Cache\Store;
 
 /**
  * Peas Framework
@@ -9,7 +9,7 @@ namespace Peas\Cache;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-Interface CacheInterface
+Interface StoreInterface
 {
     /**
      * 删除缓存

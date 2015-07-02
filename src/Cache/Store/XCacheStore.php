@@ -1,7 +1,5 @@
 <?php
-namespace Peas\Cache\Driver;
-
-use Peas\Cache\CacheInterface;
+namespace Peas\Cache\Store;
 
 /**
  * Peas Framework
@@ -11,7 +9,7 @@ use Peas\Cache\CacheInterface;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class XCache implements CacheInterface
+class XCacheStore implements StoreInterface
 {
     /**
      * 默认缓存有效期：秒
@@ -40,7 +38,7 @@ class XCache implements CacheInterface
 
 
     /**
-     * @see CacheInterface::remove()
+     * @see StoreInterface::remove()
      */
     public function remove($id)
     {
@@ -48,7 +46,7 @@ class XCache implements CacheInterface
     }
 
     /**
-     * @see CacheInterface::clear()
+     * @see StoreInterface::clear()
      */
     public function clear()
     {
@@ -60,7 +58,7 @@ class XCache implements CacheInterface
     }
 
     /**
-     * @see CacheInterface::set()
+     * @see StoreInterface::set()
      */
     public function set($id, $value, $specificLifetime = false)
     {
@@ -69,7 +67,7 @@ class XCache implements CacheInterface
     }
 
     /**
-     * @see CacheInterface::get()
+     * @see StoreInterface::get()
      */
     public function get($id)
     {
@@ -78,7 +76,7 @@ class XCache implements CacheInterface
     }
 
     /**
-     * @see CacheInterface::test()
+     * @see StoreInterface::test()
      */
     public function test($id)
     {

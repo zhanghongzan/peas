@@ -1,6 +1,8 @@
 <?php
 namespace Peas\Cache;
 
+use Peas\Cache\Store\StoreInterface;
+
 /**
  * Peas Framework
  *
@@ -16,18 +18,18 @@ class Cache
      *
      * @var array
      */
-    private $_drivers = [];
+    private $_stores = [];
 
 
     /**
      * 初始化，设置默认缓存管理类
      *
-     * @param CacheInterface $defaultDriver
+     * @param StoreInterface $defaultStore
      */
-    public function __construct(CacheInterface $defaultDriver = null)
+    public function __construct(StoreInterface $defaultStore = null)
     {
-        if ($defaultDriver) {
-            $this->setDriver('default', $defaultDriver);
+        if ($defaultStore) {
+            $this->setStore('default', $defaultStore);
         }
     }
 
@@ -36,23 +38,23 @@ class Cache
      * 设置缓存管理类
      *
      * @param  string $name 名称，default为默认缓存管理类名称
-     * @param  CacheInterface $driver
+     * @param  StoreInterface $store
      * @return void
      */
-    public function setDriver($name, CacheInterface $driver)
+    public function setStore($name, StoreInterface $store)
     {
-        $this->_drivers[$name] = $driver;
+        $this->_stores[$name] = $store;
     }
 
     /**
      * 获取缓存管理类
      *
      * @param  string $name，default为默认缓存管理类名称
-     * @return CacheInterface $driver
+     * @return StoreInterface
      */
-    public function getDriver($name)
+    public function getStore($name)
     {
-        return isset($this->_drivers[$name]) ? $this->_drivers[$name] : null;
+        return isset($this->_stores[$name]) ? $this->_stores[$name] : null;
     }
 
 
@@ -64,7 +66,7 @@ class Cache
      */
     public function remove($id)
     {
-        return $this->getDriver('default')->remove($id);
+        return $this->getStore('default')->remove($id);
     }
 
     /**
@@ -74,7 +76,7 @@ class Cache
     */
     public function clear()
     {
-        return $this->getDriver('default')->clear();
+        return $this->getStore('default')->clear();
     }
 
     /**
@@ -87,7 +89,7 @@ class Cache
     */
     public function set($id, $value, $specificLifetime = false)
     {
-        return $this->getDriver('default')->set($id, $value, $specificLifetime);
+        return $this->getStore('default')->set($id, $value, $specificLifetime);
     }
 
     /**
@@ -98,7 +100,7 @@ class Cache
     */
     public function get($id)
     {
-        return $this->getDriver('default')->get($id);
+        return $this->getStore('default')->get($id);
     }
 
     /**
@@ -109,6 +111,6 @@ class Cache
     */
     public function test($id)
     {
-        return $this->getDriver('default')->test($id);
+        return $this->getStore('default')->test($id);
     }
 }
