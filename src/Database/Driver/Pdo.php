@@ -70,7 +70,7 @@ class Pdo implements DriverInterface
             if (!empty($config['charset'])) {
                 $this->_pdo->exec('SET NAMES ' . $config['charset']);
             }
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new DatabaseException('[PDO]连接数据库出错:' . $e->getMessage(), 202);
         }
     }
@@ -144,7 +144,7 @@ class Pdo implements DriverInterface
         try {
             $result = $this->_pdo->prepare($sql);
             $result->execute();
-        } catch (PDOException $e) {
+        } catch (\PDOException $e) {
             throw new DatabaseException('[PDO]SQL执行失败：' . $e->getMessage(), 204);
         }
         Debug::debug($sql, $startTime, microtime(true));
