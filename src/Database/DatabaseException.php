@@ -11,7 +11,7 @@ use Peas\Support\PeasException;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class DbException extends PeasException
+class DatabaseException extends PeasException
 {
     /**
      * 调用父类的构造方法

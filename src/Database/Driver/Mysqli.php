@@ -1,6 +1,9 @@
 <?php
 namespace Peas\Database\Driver;
 
+use Peas\Database\DatabaseException;
+use Peas\Database\Debug;
+
 /**
  * Peas Framework
  *
@@ -59,16 +62,16 @@ class Mysqli implements DriverInterface
      *     'charset'   => 'utf8',      // 数据库编码默认采用utf8
      *     'pcconnect' => false,       // 持久连接
      * ]
-     * @throws DbException 201:不支持mysqli时抛出，202:连接数据库出错时抛出
+     * @throws DatabaseException 201:不支持mysqli时抛出，202:连接数据库出错时抛出
      */
     public function __construct(array $config = [])
     {
         if (!class_exists('mysqli')) {
-            throw new DbException('[Db]不支持mysqli', 201);
+            throw new DatabaseException('[Db]不支持mysqli', 201);
         }
         $this->_link = new mysqli($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
         if (mysqli_connect_errno()) {
-            throw new DbException('[MySqli]连接数据库[' . $config['host'] . '.' . $config['database'] . ']出错：' . mysqli_connect_error(), 202);
+            throw new DatabaseException('[MySqli]连接数据库[' . $config['host'] . '.' . $config['database'] . ']出错：' . mysqli_connect_error(), 202);
         }
         if ($this->getVersion() > '4.1') {
             $this->_link->query("SET NAMES '" . $config['charset'] . "'");
@@ -87,7 +90,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::getVersion()
+     * @see DriverInterface::getVersion()
      */
     public function getVersion()
     {
@@ -98,7 +101,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::getLink()
+     * @see DriverInterface::getLink()
      */
     public function getLink()
     {
@@ -106,7 +109,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::getError()
+     * @see DriverInterface::getError()
      */
     public function getError()
     {
@@ -114,7 +117,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::getSql()
+     * @see DriverInterface::getSql()
      */
     public function getSql()
     {
@@ -126,34 +129,34 @@ class Mysqli implements DriverInterface
      *
      * @param  string $sql
      * @return resource
-     * @throws DbException 204 执行失败时抛出
+     * @throws DatabaseException 204 执行失败时抛出
      */
     private function _doExecute($sql)
     {
         if (!$this->_link) {
-            throw new DbException('[MySqli]SQL执行失败：数据库连接有误', 204);
+            throw new DatabaseException('[MySqli]SQL执行失败：数据库连接有误', 204);
         }
         if ($this->_queryId) {
             $this->free();
         }
         $startTime = microtime(true);
         $result = $this->_link->query($sql);
-        Peas_System_Db::_debug($sql, $startTime, microtime(true));
+        Debug::debug($sql, $startTime, microtime(true));
 
         if (false === $result) {
-            throw new DbException('[MySqli]SQL执行失败：' . $this->getError(), 204);
+            throw new DatabaseException('[MySqli]SQL执行失败：' . $this->getError(), 204);
         }
         $this->_sql = $sql;
         return $result;
     }
 
     /**
-     * @see DbInterface::execute()
+     * @see DriverInterface::execute()
      */
     public function execute($sql)
     {
         $this->_doExecute($sql);
-        Peas_System_Db::$writeNum ++;
+        Debug::$writeNum ++;
         return $this->_link->affected_rows;
     }
 
@@ -167,20 +170,20 @@ class Mysqli implements DriverInterface
     {
         $result = $this->_doExecute($sql);
         $this->_queryId = $result;
-        Peas_System_Db::$queryNum ++;
+        Debug::$queryNum ++;
         return $this->_queryId->num_rows;
     }
 
     /**
      * 获取查询结果集
      *
-     * @param  $className 对象名，不为空表示获取对象形式的结果集，为空表示获取数组形式的结果集，默认为空
-     * @param  $params 获取对象形式结果时，传入构造函数的参数
+     * @param  string $className 对象名，不为空表示获取对象形式的结果集，为空表示获取数组形式的结果集，默认为空
+     * @param  array  $params 获取对象形式结果时，传入构造函数的参数
      * @return array 结果集
      */
-    private function _getAll($className = '', $params = array())
+    private function _getAll($className = '', array $params = [])
     {
-        $result  = array();
+        $result  = [];
         $numRows = $this->_queryId->num_rows;
         if ($numRows > 0) {
             if (empty($className)) {
@@ -202,7 +205,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::getNumRows()
+     * @see DriverInterface::getNumRows()
      */
     public function getNumRows($sql)
     {
@@ -210,7 +213,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::select()
+     * @see DriverInterface::select()
      */
     public function select($sql)
     {
@@ -219,16 +222,16 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::selectForObject()
+     * @see DriverInterface::selectForObject()
      */
-    public function selectForObject($sql, $className = '', $params = array())
+    public function selectForObject($sql, $className = '', array $params = [])
     {
         $this->_query($sql);
         return $this->_getAll(empty($className) ? 'stdClass' : $className, $params);
     }
 
     /**
-     * @see DbInterface::update()
+     * @see DriverInterface::update()
      */
     public function update($sql)
     {
@@ -236,7 +239,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::delete()
+     * @see DriverInterface::delete()
      */
     public function delete($sql)
     {
@@ -244,7 +247,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::insert()
+     * @see DriverInterface::insert()
      */
     public function insert($sql)
     {
@@ -253,21 +256,21 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::rollback()
+     * @see DriverInterface::rollback()
      */
     public function rollback()
     {
         if ($this->_transTimes > 0) {
             $result = $this->_link->rollback();
             if(!$result) {
-                throw new DbException('[MySqli]事务回滚失败：' . $this->getError(), 206);
+                throw new DatabaseException('[MySqli]事务回滚失败：' . $this->getError(), 206);
             }
             $this->_transTimes = 0;
         }
     }
 
     /**
-     * @see DbInterface::startTrans()
+     * @see DriverInterface::startTrans()
      */
     public function startTrans()
     {
@@ -282,7 +285,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::commit()
+     * @see DriverInterface::commit()
      */
     public function commit()
     {
@@ -290,14 +293,14 @@ class Mysqli implements DriverInterface
             $result = $this->_link->commit();
             $this->_link->autocommit(true);
             if(!$result){
-                throw new DbException('[MySqli]事务提交失败：' . $this->getError(), 205);
+                throw new DatabaseException('[MySqli]事务提交失败：' . $this->getError(), 205);
             }
             $this->_transTimes = 0;
         }
     }
 
     /**
-     * @see DbInterface::free()
+     * @see DriverInterface::free()
      */
     public function free()
     {
@@ -306,7 +309,7 @@ class Mysqli implements DriverInterface
     }
 
     /**
-     * @see DbInterface::close()
+     * @see DriverInterface::close()
      */
     public function close()
     {
@@ -314,13 +317,13 @@ class Mysqli implements DriverInterface
             $this->_queryId->free_result();
         }
         if ($this->_link && !$this->_link->close()) {
-            throw new DbException('[MySqli]关闭连接失败：' . $this->getError(), 203);
+            throw new DatabaseException('[MySqli]关闭连接失败：' . $this->getError(), 203);
         }
         $this->_link = null;
     }
 
     /**
-     * @see DbInterface::escapeString()
+     * @see DriverInterface::escapeString()
      */
     public function escapeString($str)
     {

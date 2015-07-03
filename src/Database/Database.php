@@ -26,7 +26,14 @@ class Database
     public static $writeNum = 0;
 
     /**
-     * 执行的Sql语句，调试模式时会将执行的Sql语句存储到此数组中，每一条记录也为一个数组，array(sql，耗时)
+     * 是否为调试模式
+     *
+     * @var boolean
+     */
+    public static $debug = false;
+
+    /**
+     * 执行的Sql语句，调试模式时执行的Sql语句存储到此数组中，每一条记录也为一个数组，array(sql，耗时)
      *
      * @var array
      */
@@ -651,9 +658,9 @@ class Database
      * @param  float  $endTime   执行结束时间
      * @return void
      */
-    public static function _debug($sql = '', $startTime = 0, $endTime = 0)
+    public static function debug($sql = '', $startTime = 0, $endTime = 0)
     {
-        if (_MODE == 'debug') {
+        if (self::$debug) {
             array_push(self::$sqls, array($sql, number_format($endTime - $startTime, 6)));
         }
     }

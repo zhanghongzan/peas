@@ -1,4 +1,9 @@
 <?php
+namespace Peas\Database\Driver;
+
+use Peas\Database\DatabaseException;
+use Peas\Database\Debug;
+
 /**
  * Peas Framework
  *
@@ -7,15 +12,14 @@
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-
-class Peas_System_Db_Pdo implements Peas_System_Db_Interface
+class Pdo implements DriverInterface
 {
     /**
      * PDO实例
      *
      * @var PDO
      */
-    private $_pdo = NULL;
+    private $_pdo = null;
 
     /**
      * 当前查询
@@ -50,16 +54,16 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
      * 初始化连接
      *
      * @param array $config 配置参数
-     * @throws Peas_System_Db_Exception 201:不支持PDO时抛出，202:连接数据库出错时抛出
+     * @throws DatabaseException 201:不支持PDO时抛出，202:连接数据库出错时抛出
      */
     public function __construct($config)
     {
         if (!class_exists('PDO')) {
-            throw new Peas_System_Db_Exception('[Db]不支持PDO', 201);
+            throw new DatabaseException('[Db]不支持PDO', 201);
         }
         try {
             if ($config['pcconnect']) {
-                $this->_pdo = new PDO($config['dsn'], $config['username'], $config['password'], array(PDO::ATTR_PERSISTENT => true));
+                $this->_pdo = new PDO($config['dsn'], $config['username'], $config['password'], [PDO::ATTR_PERSISTENT => true]);
             } else {
                 $this->_pdo = new PDO($config['dsn'], $config['username'], $config['password']);
             }
@@ -67,7 +71,7 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
                 $this->_pdo->exec('SET NAMES ' . $config['charset']);
             }
         } catch (PDOException $e) {
-            throw new Peas_System_Db_Exception('[PDO]连接数据库出错:' . $e->getMessage(), 202);
+            throw new DatabaseException('[PDO]连接数据库出错:' . $e->getMessage(), 202);
         }
     }
 
@@ -80,7 +84,7 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getVersion()
+     * @see DriverInterface::getVersion()
      */
     public function getVersion()
     {
@@ -91,7 +95,7 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getLink()
+     * @see DriverInterface::getLink()
      */
     public function getLink()
     {
@@ -99,7 +103,7 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getError()
+     * @see DriverInterface::getError()
      */
     public function getError()
     {
@@ -112,7 +116,7 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getSql()
+     * @see DriverInterface::getSql()
      */
     public function getSql()
     {
@@ -124,40 +128,40 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
      *
      * @param  string $sql
      * @return void
-     * @throws Peas_System_Db_Exception
+     * @throws DatabaseException
      */
     private function _doExecute($sql)
     {
         if (!$this->_pdo) {
-            throw new Peas_System_Db_Exception('[PDO]SQL执行失败：数据库连接有误', 204);
+            throw new DatabaseException('[PDO]SQL执行失败：数据库连接有误', 204);
         }
         if (!empty($this->_pdoStatement)) {
             $this->free();
         }
 
         $this->_sql = $sql;
-        $startTime = microtime(TRUE);
+        $startTime = microtime(true);
         try {
             $result = $this->_pdo->prepare($sql);
             $result->execute();
         } catch (PDOException $e) {
-            throw new Peas_System_Db_Exception('[PDO]SQL执行失败：' . $e->getMessage(), 204);
+            throw new DatabaseException('[PDO]SQL执行失败：' . $e->getMessage(), 204);
         }
-        Peas_System_Db::_debug($sql, $startTime, microtime(TRUE));
+        Debug::debug($sql, $startTime, microtime(true));
 
-        if ($result === FALSE) {
-            throw new Peas_System_Db_Exception('[PDO]SQL执行失败：' . $this->getError(), 204);
+        if ($result === false) {
+            throw new DatabaseException('[PDO]SQL执行失败：' . $this->getError(), 204);
         }
         return $result;
     }
 
     /**
-     * @see Peas_System_Db_Interface::execute()
+     * @see DriverInterface::execute()
      */
     public function execute($sql)
     {
         $result = $this->_doExecute($sql);
-        Peas_System_Db::$writeNum ++;
+        Debug::$writeNum ++;
         return $result->rowCount();
     }
 
@@ -171,18 +175,22 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     {
         $result = $this->_doExecute($sql);
         $this->_pdoStatement = $result;
-        Peas_System_Db::$queryNum ++;
+        Debug::$queryNum ++;
     }
 
     /**
      * 获取查询结果集
+     *
+     * @param  string $className 对象名，不为空表示获取对象形式的结果集，为空表示获取数组形式的结果集，默认为空
+     * @param  array  $params 获取对象形式结果时，传入构造函数的参数
+     * @return array 结果集
      */
-    private function _getAll($className = '', $params = array())
+    private function _getAll($className = '', array $params = [])
     {
         if (empty($className)) {
             return $this->_pdoStatement->fetchAll(PDO::FETCH_ASSOC);
         }
-        $result = array();
+        $result = [];
         $row = $this->_pdoStatement->fetchObject($className, $params);
         while ($row) {
             $result[] = $row;
@@ -192,17 +200,17 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::getNumRows()
+     * @see DriverInterface::getNumRows()
      */
     public function getNumRows($sql)
     {
-        $sql = 'SELECT count(0) nums from (' . $sql . ') Peas_System_Db_e';
+        $sql = 'SELECT count(0) nums from (' . $sql . ') Peas_Database_E';
         $this->_query($sql);
         return $this->_pdoStatement->fetchObject()->nums;
     }
 
     /**
-     * @see Peas_System_Db_Interface::select()
+     * @see DriverInterface::select()
      */
     public function select($sql)
     {
@@ -211,16 +219,16 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::selectForObject()
+     * @see DriverInterface::selectForObject()
      */
-    public function selectForObject($sql, $className = '', $params = array())
+    public function selectForObject($sql, $className = '', array $params = [])
     {
         $this->_query($sql);
         return $this->_getAll(empty($className) ? 'stdClass' : $className, $params);
     }
 
     /**
-     * @see Peas_System_Db_Interface::update()
+     * @see DriverInterface::update()
      */
     public function update($sql)
     {
@@ -228,7 +236,7 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::delete()
+     * @see DriverInterface::delete()
      */
     public function delete($sql)
     {
@@ -236,7 +244,7 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::insert()
+     * @see DriverInterface::insert()
      */
     public function insert($sql)
     {
@@ -245,69 +253,69 @@ class Peas_System_Db_Pdo implements Peas_System_Db_Interface
     }
 
     /**
-     * @see Peas_System_Db_Interface::rollback()
+     * @see DriverInterface::rollback()
      */
     public function rollback()
     {
         if ($this->_transTimes > 0) {
             $result = $this->_pdo->rollBack();
             if (!$result) {
-                throw new Peas_System_Db_Exception('[PDO]事务回滚失败：' . $this->getError(), 206);
+                throw new DatabaseException('[PDO]事务回滚失败：' . $this->getError(), 206);
             }
             $this->_transTimes = 0;
         }
     }
 
     /**
-     * @see Peas_System_Db_Interface::startTrans()
+     * @see DriverInterface::startTrans()
      */
     public function startTrans()
     {
         if (!$this->_pdo) {
-            return FALSE;
+            return false;
         }
         if ($this->_transTimes == 0) {
             $this->_pdo->beginTransaction();
         }
         $this->_transTimes++;
-        return TRUE;
+        return true;
     }
 
     /**
-     * @see Peas_System_Db_Interface::commit()
+     * @see DriverInterface::commit()
      */
     public function commit()
     {
         if ($this->_transTimes > 0) {
             $result = $this->_pdo->commit();
             if (!$result) {
-                throw new Peas_System_Db_Exception('[PDO]事务提交失败：' . $this->getError(), 205);
+                throw new DatabaseException('[PDO]事务提交失败：' . $this->getError(), 205);
             }
             $this->_transTimes = 0;
         }
     }
 
     /**
-     * @see Peas_System_Db_Interface::free()
+     * @see DriverInterface::free()
      */
     public function free()
     {
-        $this->_pdoStatement = NULL;
+        $this->_pdoStatement = null;
     }
 
     /**
-     * @see Peas_System_Db_Interface::close()
+     * @see DriverInterface::close()
      */
     public function close()
     {
         if (!empty($this->_pdoStatement)) {
             $this->free();
         }
-        $this->_pdo = NULL;
+        $this->_pdo = null;
     }
 
     /**
-     * @see Peas_System_Db_Interface::escapeString()
+     * @see DriverInterface::escapeString()
      */
     public function escapeString($str)
     {

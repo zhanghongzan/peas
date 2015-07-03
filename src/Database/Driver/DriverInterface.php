@@ -52,7 +52,7 @@ interface DriverInterface
      * @return array 对象形式的结果集数组
      * @throws DbException 204 执行失败时抛出
      */
-    public function selectForObject($sql, $className = '', $params = array());
+    public function selectForObject($sql, $className = '', array $params = []);
 
     /**
      * 执行插入语句
