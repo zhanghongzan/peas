@@ -60,11 +60,18 @@ class Logger extends AbstractLogger
      * 初始化
      *
      * @param WriterInterface $writer
+     * @param array $config 默认值：[
+     *     'record'      => true,                                                // 日志保存开关，是否保存日志
+     *     'recordLevel' => ['emergency', 'alert', 'critical', 'error', 'info'], // 允许记录的日志级别，level名称详见Psr\Log\LogLevel
+     * ]
      */
-    public function __construct(WriterInterface $writer = null)
+    public function __construct(WriterInterface $writer = null, array $config = [])
     {
         if (!is_null($writer)) {
             $this->setWriter($writer);
+        }
+        if (!empty($config)) {
+            $this->setConfig($config);
         }
     }
 
