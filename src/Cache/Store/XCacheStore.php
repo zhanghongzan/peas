@@ -12,32 +12,6 @@ namespace Peas\Cache\Store;
 class XCacheStore implements StoreInterface
 {
     /**
-     * 默认缓存有效期：秒
-     *
-     * @var int -1表示永久有效
-     */
-    public $defaultLifetime = -1;
-
-
-    /**
-     * 初始化
-     *
-     * @param  array $config 配置参数，键名为public属性名，设置对应属性的值
-     * @return boolean
-     */
-    public function init(array $config = [])
-    {
-        if (!function_exists('xcache_info')) {
-            return false;
-        }
-        if (isset($config['defaultLifetime'])) {
-            $this->defaultLifetime = $config['defaultLifetime'];
-        }
-        return true;
-    }
-
-
-    /**
      * @see StoreInterface::remove()
      */
     public function remove($id)
@@ -60,9 +34,8 @@ class XCacheStore implements StoreInterface
     /**
      * @see StoreInterface::set()
      */
-    public function set($id, $value, $specificLifetime = false)
+    public function set($id, $value, $lifetime)
     {
-        $lifetime = $specificLifetime === false ? $this->defaultLifetime : $specificLifetime;
         return xcache_set($id, [$value, time()], $lifetime);
     }
 

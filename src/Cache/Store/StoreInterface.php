@@ -31,10 +31,10 @@ Interface StoreInterface
      *
      * @param  string $id 缓存ID
      * @param  mixed  $value 缓存值
-     * @param  int    $specificLifetime 缓存有效期（秒），false时表示使用默认
+     * @param  int    $lifetime 缓存有效期（秒）
      * @return boolean 成功返回true，失败返回false
      */
-    public function set($id, $value, $specificLifetime = false);
+    public function set($id, $value, $lifetime);
 
     /**
      * 获取缓存

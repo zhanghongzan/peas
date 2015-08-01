@@ -1,6 +1,8 @@
 <?php
 namespace Peas\Cache\Store;
 
+use FilesystemIterator;
+
 /**
  * Peas Framework
  *
@@ -12,42 +14,23 @@ namespace Peas\Cache\Store;
 class FileStore implements StoreInterface
 {
     /**
-     * 缓存有效期：秒
-     *
-     * @var int -1表示永久有效
-     */
-    public $defaultLifetime = -1;
-
-    /**
      * 文件缓存存放目录
      *
      * @var string
      */
-    public $fileDir = '';
-
-    /**
-     * 是否压缩缓存
-     *
-     * @var boolean
-     */
-    public $compress = false;
+    private $_directory = '';
 
 
     /**
-     * 初始化
+     * 构造函数，初始化
      *
-     * @param  array $config 配置参数，键名为public属性名，设置对应属性的值
-     * @return boolean
+     * @param array $config 参数，仅文件缓存存放目录有效，如['directory' => '文件缓存存放目录']
      */
-    public function init(array $config = [])
+    public function __construct($config)
     {
         foreach ($config as $key => $val) {
-            $this->{$key} = $val;
+            $this->_{$key} = $val;
         }
-        if (empty($this->fileDir)) {
-            $this->fileDir = dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))) . '/storage/framework/cache';
-        }
-        return true;
     }
 
 
@@ -64,34 +47,33 @@ class FileStore implements StoreInterface
      */
     public function clear()
     {
-        $fileDir = $this->fileDir;
-        $dir = opendir($fileDir);
-        if ($dir) {
-            $file = readdir($dir);
-            while ($file) {
-                if (pathinfo($file, PATHINFO_EXTENSION) == 'cache' && is_file($fileDir . '/' . $file)) {
-                    unlink($fileDir . '/' . $file);
-                }
-                $file = readdir($dir);
+        $items = new FilesystemIterator($this->_directory);
+        foreach ($items as $item) {
+            if ($item->isDir() && !$item->isLink()) {
+                $this->_deleteDirectory($item->getPathname());
+            } else {
+                @unlink($item->getPathname());
             }
-            closedir($dir);
-            return true;
         }
-        return false;
+        return true;
     }
 
     /**
      * @see StoreInterface::set()
      */
-    public function set($id, $value, $specificLifetime = false)
+    public function set($id, $value, $lifetime)
     {
-        $lifetime  = $specificLifetime === false ? $this->defaultLifetime : $specificLifetime;
-        $validTime = $lifetime == -1 ? -1 : time() + $lifetime;
-
+        $validTime = time() + $lifetime;
         $data = ['valid' => $validTime, 'data' => $value];
-        $writeData = $this->compress && function_exists('gzcompress') ? gzcompress(serialize($data), 3) : serialize($data);
+        $writeData = function_exists('gzcompress') ? gzcompress(serialize($data), 3) : serialize($data);
 
-        if (file_put_contents($this->_getFilePath($id), $writeData)) {
+        $filePath = $this->_getFilePath($id);
+        $fileDir  = dirname($filePath);
+        if (!is_dir($fileDir)) {
+            @mkdir($fileDir, 0777, true);
+        }
+
+        if (file_put_contents($filePath, $writeData)) {
             clearstatcache();
             return true;
         }
@@ -138,8 +120,8 @@ class FileStore implements StoreInterface
         if ($content === false) {
             return false;
         }
-        $data = unserialize($this->compress && function_exists('gzuncompress') ? gzuncompress($content) : $content);
-        if ($data['valid'] != -1 && time() > $data['valid']) {
+        $data = unserialize(function_exists('gzuncompress') ? gzuncompress($content) : $content);
+        if (time() > $data['valid']) {
             unlink($filePath); // 过期删除
             return false;
         }
@@ -154,6 +136,30 @@ class FileStore implements StoreInterface
      */
     private function _getFilePath($id)
     {
-        return $this->fileDir . '/' . md5($id) . '.cache';
+        $key = md5($id);
+        $dir = implode('/', array_slice(str_split($key, 2), 0, 2));
+        return $this->_directory . '/' . $dir . '/' . $key . '.cache';
+    }
+
+    /**
+     * 删除目录
+     *
+     * @param string $directory
+     */
+    private function _deleteDirectory($directory)
+    {
+        if (!is_dir($directory)) {
+            return false;
+        }
+        $items = new FilesystemIterator($directory);
+        foreach ($items as $item) {
+            if ($item->isDir() && !$item->isLink()) {
+                $this->_deleteDirectory($item->getPathname());
+            } else {
+                @unlink($item->getPathname());
+            }
+        }
+        @rmdir($directory);
+        return true;
     }
 }

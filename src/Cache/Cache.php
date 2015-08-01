@@ -16,47 +16,53 @@ class Cache
     /**
      * 具体缓存管理类
      *
-     * @var array
+     * @var StoreInterface
      */
-    private $_stores = [];
+    private $_store = null;
+
+    /**
+     * key前缀
+     *
+     * @var string
+     */
+    public $prefix = '';
+
+    /**
+     * 默认缓存有效期：秒
+     *
+     * @var int -1表示永久有效
+     */
+    public $defaultLifetime = 86400;
 
 
     /**
      * 初始化，设置默认缓存管理类
      *
-     * @param StoreInterface $defaultStore
+     * @param string $prefix          key前缀，默认为''
+     * @param string $defaultLifetime 默认缓存有效期（秒），默认为86400
+     * @param string $storeType       缓存类型，可以是apc,file,xCache，默认为apc
+     * @param array  $storeConfig     需要传入的参数，没有可不传
      */
-    public function __construct(StoreInterface $defaultStore = null)
+    public function __construct($prefix = '', $defaultLifetime = 86400, $storeType = 'apc', array $storeConfig = [])
     {
-        if ($defaultStore) {
-            $this->setStore('default', $defaultStore);
-        }
+        $this->prefix = $prefix;
+        $this->defaultLifetime = $defaultLifetime;
+        $this->setStore($storeType, $config);
     }
 
 
     /**
      * 设置缓存管理类
      *
-     * @param  string $name 名称，default为默认缓存管理类名称
-     * @param  StoreInterface $store
+     * @param string $storeType   缓存类型，可以是apc,file,xCache
+     * @param array  $storeConfig 需要传入的参数，没有可不传
      * @return void
      */
-    public function setStore($name, StoreInterface $store)
+    public function setStore($storeType = 'apc', array $storeConfig = [])
     {
-        $this->_stores[$name] = $store;
+        $storeName = 'Peas\\Cache\\Store\\' . ucfirst($storeType);
+        $this->_store = new $storeName($storeConfig);
     }
-
-    /**
-     * 获取缓存管理类
-     *
-     * @param  string $name，default为默认缓存管理类名称
-     * @return StoreInterface
-     */
-    public function getStore($name)
-    {
-        return isset($this->_stores[$name]) ? $this->_stores[$name] : null;
-    }
-
 
     /**
      * 删除缓存
@@ -66,7 +72,7 @@ class Cache
      */
     public function remove($id)
     {
-        return $this->getStore('default')->remove($id);
+        return $this->_store->remove($this->prefix . $id);
     }
 
     /**
@@ -76,20 +82,25 @@ class Cache
      */
     public function clear()
     {
-        return $this->getStore('default')->clear();
+        return $this->_store->clear();
     }
 
     /**
      * 设置缓存
      *
-     * @param  string $id 缓存ID
-     * @param  mixed  $value 缓存值
-     * @param  int    $specificLifetime 缓存有效期（秒），false时表示使用默认
+     * @param  string $id       缓存ID
+     * @param  mixed  $value    缓存值
+     * @param  int    $lifetime 缓存有效期（秒），0表示使用默认，-1表示永久有效
      * @return boolean 成功返回true，失败返回false
      */
-    public function set($id, $value, $specificLifetime = false)
+    public function set($id, $value, $lifetime = 0)
     {
-        return $this->getStore('default')->set($id, $value, $specificLifetime);
+        if ($lifetime == 0) {
+            $lifetime = $this->defaultLifetime;
+        } else if ($lifetime == -1) {
+            $lifetime = 8640000000;
+        }
+        return $this->_store->set($this->prefix . $id, $value, $lifetime);
     }
 
     /**
@@ -100,7 +111,7 @@ class Cache
      */
     public function get($id)
     {
-        return $this->getStore('default')->get($id);
+        return $this->_store->get($this->prefix . $id);
     }
 
     /**
@@ -111,6 +122,6 @@ class Cache
      */
     public function test($id)
     {
-        return $this->getStore('default')->test($id);
+        return $this->_store->test($this->prefix . $id);
     }
 }
