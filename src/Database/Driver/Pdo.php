@@ -1,7 +1,7 @@
 <?php
 namespace Peas\Database\Driver;
 
-use Peas\Database\DatabaseException;
+use Peas\Database\DbException;
 use Peas\Database\Debug;
 
 /**
@@ -54,12 +54,12 @@ class Pdo implements DriverInterface
      * 初始化连接
      *
      * @param array $config 配置参数
-     * @throws DatabaseException 201:不支持PDO时抛出，202:连接数据库出错时抛出
+     * @throws DbException 201:不支持PDO时抛出，202:连接数据库出错时抛出
      */
     public function __construct($config)
     {
         if (!class_exists('PDO')) {
-            throw new DatabaseException('[Db]不支持PDO', 201);
+            throw new DbException('[Db]不支持PDO', 201);
         }
         try {
             if ($config['pcconnect']) {
@@ -71,7 +71,7 @@ class Pdo implements DriverInterface
                 $this->_pdo->exec('SET NAMES ' . $config['charset']);
             }
         } catch (\PDOException $e) {
-            throw new DatabaseException('[PDO]连接数据库出错:' . $e->getMessage(), 202);
+            throw new DbException('[PDO]连接数据库出错:' . $e->getMessage(), 202);
         }
     }
 
@@ -128,12 +128,12 @@ class Pdo implements DriverInterface
      *
      * @param  string $sql
      * @return void
-     * @throws DatabaseException
+     * @throws DbException
      */
     private function _doExecute($sql)
     {
         if (!$this->_pdo) {
-            throw new DatabaseException('[PDO]SQL执行失败：数据库连接有误', 204);
+            throw new DbException('[PDO]SQL执行失败：数据库连接有误', 204);
         }
         if (!empty($this->_pdoStatement)) {
             $this->free();
@@ -145,12 +145,12 @@ class Pdo implements DriverInterface
             $result = $this->_pdo->prepare($sql);
             $result->execute();
         } catch (\PDOException $e) {
-            throw new DatabaseException('[PDO]SQL执行失败：' . $e->getMessage(), 204);
+            throw new DbException('[PDO]SQL执行失败：' . $e->getMessage(), 204);
         }
         Debug::debug($sql, $startTime, microtime(true));
 
         if ($result === false) {
-            throw new DatabaseException('[PDO]SQL执行失败：' . $this->getError(), 204);
+            throw new DbException('[PDO]SQL执行失败：' . $this->getError(), 204);
         }
         return $result;
     }
@@ -260,7 +260,7 @@ class Pdo implements DriverInterface
         if ($this->_transTimes > 0) {
             $result = $this->_pdo->rollBack();
             if (!$result) {
-                throw new DatabaseException('[PDO]事务回滚失败：' . $this->getError(), 206);
+                throw new DbException('[PDO]事务回滚失败：' . $this->getError(), 206);
             }
             $this->_transTimes = 0;
         }
@@ -289,7 +289,7 @@ class Pdo implements DriverInterface
         if ($this->_transTimes > 0) {
             $result = $this->_pdo->commit();
             if (!$result) {
-                throw new DatabaseException('[PDO]事务提交失败：' . $this->getError(), 205);
+                throw new DbException('[PDO]事务提交失败：' . $this->getError(), 205);
             }
             $this->_transTimes = 0;
         }

@@ -1,7 +1,7 @@
 <?php
 namespace Peas\Database\Driver;
 
-use Peas\Database\DatabaseException;
+use Peas\Database\DbException;
 use Peas\Database\Debug;
 
 /**
@@ -54,18 +54,18 @@ class Sqlite implements DriverInterface
      * 初始化连接
      *
      * @param  array $config 配置参数
-     * @throws DatabaseException 201:不支持Sqlite时抛出，202:连接数据库出错时抛出
+     * @throws DbException 201:不支持Sqlite时抛出，202:连接数据库出错时抛出
      */
     public function __construct($config)
     {
         if (!extension_loaded('sqlite')) {
-            throw new DatabaseException('[Db]不支持Sqlite数据库', 201);
+            throw new DbException('[Db]不支持Sqlite数据库', 201);
         }
         $functionName = $config['pcconnect'] ? 'sqlite_popen' : 'sqlite_open';
         $this->mode   = array_key_exists('mode', $config) ? $config['mode'] : $this->mode;
         $this->_link  = $functionName($config['database'], $this->mode);
         if (!$this->_link) {
-            throw new DatabaseException('[Sqlite]连接数据库[' . $config['database'] . ']出错', 202);
+            throw new DbException('[Sqlite]连接数据库[' . $config['database'] . ']出错', 202);
         }
     }
 
@@ -114,12 +114,12 @@ class Sqlite implements DriverInterface
      *
      * @param  string  $sql
      * @param  boolean $ifQuery 是否为查询
-     * @throws DatabaseException
+     * @throws DbException
      */
     private function _doExecute($sql, $ifQuery = false)
     {
         if (!$this->_link) {
-            throw new DatabaseException('[Sqlite]SQL执行失败：数据库连接有误', 204);
+            throw new DbException('[Sqlite]SQL执行失败：数据库连接有误', 204);
         }
         if ($this->_queryId) {
             $this->free();
@@ -129,7 +129,7 @@ class Sqlite implements DriverInterface
         Debug::debug($sql, $startTime, microtime(true));
 
         if (false === $result) {
-            throw new DatabaseException("[Sqlite]" . $this->getError(), 204);
+            throw new DbException("[Sqlite]" . $this->getError(), 204);
         }
         $this->_sql = $sql;
         return $result;
@@ -244,7 +244,7 @@ class Sqlite implements DriverInterface
         if ($this->_transTimes > 0) {
             $result = sqlite_query($this->_link, 'ROLLBACK TRANSACTION');
             if(!$result) {
-                throw new DatabaseException('[Sqlite]事务回滚失败：' . $this->getError(), 206);
+                throw new DbException('[Sqlite]事务回滚失败：' . $this->getError(), 206);
             }
             $this->_transTimes = 0;
         }
@@ -273,7 +273,7 @@ class Sqlite implements DriverInterface
         if ($this->_transTimes > 0) {
             $result = sqlite_query($this->_link, 'COMMIT TRANSACTION');
             if(!$result){
-                throw new DatabaseException('[Sqlite]事务提交失败：' . $this->getError(), 205);
+                throw new DbException('[Sqlite]事务提交失败：' . $this->getError(), 205);
             }
             $this->_transTimes = 0;
         }
@@ -293,7 +293,7 @@ class Sqlite implements DriverInterface
     public function close()
     {
         if ($this->_link && !sqlite_close($this->_link)){
-            throw new DatabaseException('[Sqlite]关闭连接失败：' . $this->getError(), 203);
+            throw new DbException('[Sqlite]关闭连接失败：' . $this->getError(), 203);
         }
         $this->_link = null;
     }

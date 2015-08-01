@@ -44,7 +44,6 @@ class IpLocation
      * 构造函数，打开QQWry.Dat文件并初始化类中的信息
      *
      * @param  string $datFilePath 数据文件地址（QQWry.Dat文件）
-     * @throws Peas_Exception
      */
     public function __construct($datFilePath)
     {

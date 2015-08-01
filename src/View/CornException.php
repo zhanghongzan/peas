@@ -1,6 +1,8 @@
 <?php
 namespace Peas\View;
 
+use Peas\Support\Exception;
+
 /**
  * Peas Framework
  *
@@ -20,7 +22,7 @@ namespace Peas\View;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class CornException extends \Exception
+class CornException extends Exception
 {
     public function __construct($message, $code = 100)
     {

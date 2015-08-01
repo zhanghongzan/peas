@@ -9,7 +9,7 @@ namespace Peas\Support;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class PeasException extends \Exception
+class Exception extends \Exception
 {
     /**
      * 存储未捕获到的异常

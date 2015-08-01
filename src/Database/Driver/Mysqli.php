@@ -1,7 +1,7 @@
 <?php
 namespace Peas\Database\Driver;
 
-use Peas\Database\DatabaseException;
+use Peas\Database\DbException;
 use Peas\Database\Debug;
 
 /**
@@ -62,16 +62,16 @@ class Mysqli implements DriverInterface
      *     'charset'   => 'utf8',      // 数据库编码默认采用utf8
      *     'pcconnect' => false,       // 持久连接
      * ]
-     * @throws DatabaseException 201:不支持mysqli时抛出，202:连接数据库出错时抛出
+     * @throws DbException 201:不支持mysqli时抛出，202:连接数据库出错时抛出
      */
     public function __construct(array $config = [])
     {
         if (!class_exists('mysqli')) {
-            throw new DatabaseException('[Db]不支持mysqli', 201);
+            throw new DbException('[Db]不支持mysqli', 201);
         }
         $this->_link = new mysqli($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
         if (mysqli_connect_errno()) {
-            throw new DatabaseException('[MySqli]连接数据库[' . $config['host'] . '.' . $config['database'] . ']出错：' . mysqli_connect_error(), 202);
+            throw new DbException('[MySqli]连接数据库[' . $config['host'] . '.' . $config['database'] . ']出错：' . mysqli_connect_error(), 202);
         }
         if ($this->getVersion() > '4.1') {
             $this->_link->query("SET NAMES '" . $config['charset'] . "'");
@@ -129,12 +129,12 @@ class Mysqli implements DriverInterface
      *
      * @param  string $sql
      * @return resource
-     * @throws DatabaseException 204 执行失败时抛出
+     * @throws DbException 204 执行失败时抛出
      */
     private function _doExecute($sql)
     {
         if (!$this->_link) {
-            throw new DatabaseException('[MySqli]SQL执行失败：数据库连接有误', 204);
+            throw new DbException('[MySqli]SQL执行失败：数据库连接有误', 204);
         }
         if ($this->_queryId) {
             $this->free();
@@ -144,7 +144,7 @@ class Mysqli implements DriverInterface
         Debug::debug($sql, $startTime, microtime(true));
 
         if (false === $result) {
-            throw new DatabaseException('[MySqli]SQL执行失败：' . $this->getError(), 204);
+            throw new DbException('[MySqli]SQL执行失败：' . $this->getError(), 204);
         }
         $this->_sql = $sql;
         return $result;
@@ -263,7 +263,7 @@ class Mysqli implements DriverInterface
         if ($this->_transTimes > 0) {
             $result = $this->_link->rollback();
             if(!$result) {
-                throw new DatabaseException('[MySqli]事务回滚失败：' . $this->getError(), 206);
+                throw new DbException('[MySqli]事务回滚失败：' . $this->getError(), 206);
             }
             $this->_transTimes = 0;
         }
@@ -293,7 +293,7 @@ class Mysqli implements DriverInterface
             $result = $this->_link->commit();
             $this->_link->autocommit(true);
             if(!$result){
-                throw new DatabaseException('[MySqli]事务提交失败：' . $this->getError(), 205);
+                throw new DbException('[MySqli]事务提交失败：' . $this->getError(), 205);
             }
             $this->_transTimes = 0;
         }
@@ -317,7 +317,7 @@ class Mysqli implements DriverInterface
             $this->_queryId->free_result();
         }
         if ($this->_link && !$this->_link->close()) {
-            throw new DatabaseException('[MySqli]关闭连接失败：' . $this->getError(), 203);
+            throw new DbException('[MySqli]关闭连接失败：' . $this->getError(), 203);
         }
         $this->_link = null;
     }

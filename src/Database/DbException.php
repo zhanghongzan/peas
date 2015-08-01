@@ -1,7 +1,7 @@
 <?php
 namespace Peas\Database;
 
-use Peas\Support\PeasException;
+use Peas\Support\Exception;
 
 /**
  * Peas Framework
@@ -11,7 +11,7 @@ use Peas\Support\PeasException;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class DatabaseException extends PeasException
+class DbException extends Exception
 {
     /**
      * 调用父类的构造方法
