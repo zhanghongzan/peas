@@ -57,9 +57,6 @@ class SimpleImageCaptcha
         foreach ($config as $key => $val) {
             $this->$key = $val;
         }
-        if (empty($this->font) || !is_file($this->font)) {
-            $this->font = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/resources/fonts/StrungPiano.ttf';
-        }
     }
 
     /**

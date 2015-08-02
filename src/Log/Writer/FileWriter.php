@@ -46,10 +46,6 @@ class FileWriter extends AbstractWriter
         if (!empty($config)) {
             $this->setConfig($config);
         }
-        $fileDir = $this->getConfig('dir');
-        if (empty($fileDir)) {
-            $this->setConfig('dir', dirname(dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))))) . '/storage/logs');
-        }
         if ($this->getConfig('fileSize') < 1) {
             $this->setConfig('fileSize', 1);
         }

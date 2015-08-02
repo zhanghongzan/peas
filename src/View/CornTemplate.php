@@ -122,17 +122,6 @@ class CornTemplate
                 $this->_{$key} = $val;
             }
         }
-        $baseDir = dirname(dirname(dirname(dirname(dirname(dirname(__FILE__))))));
-        $baseDir = dirname(dirname(dirname(dirname(__FILE__)))) . '/peas-2.0';
-        if (empty($this->_templateDir)) {
-            $this->_templateDir = $baseDir . '/resources/views';
-        }
-        if (empty($this->_compileDir)) {
-            $this->_compileDir = $baseDir . '/storage/framework/views/compile';
-        }
-        if (empty($this->_cacheDir)) {
-            $this->_cacheDir = $baseDir . '/storage/framework/views/cache';
-        }
     }
 
 
