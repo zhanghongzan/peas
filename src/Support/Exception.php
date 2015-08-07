@@ -30,8 +30,7 @@ class Exception extends \Exception
      * 调用父类的构造方法
      *
      * @param  string $message 自定义的异常信息
-     * @param  int $code 异常代码
-     * @return void
+     * @param  int    $code 异常代码
      */
     public function __construct($message, $code = 0)
     {

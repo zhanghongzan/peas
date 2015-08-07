@@ -1,0 +1,45 @@
+
+
+# 继承Exception，主要提供了一个printTraceToLog方法调用打印日志的静态方法
+$exception->printTraceToLog();
+
+
+# 格式化异常信息
+# 方法：toString(\Exception $e)
+# 参数：Exception $e 异常
+# 返回：格式化的异常信息
+$str = Exception::toString($e);
+
+
+# 获取数组形式的异常信息
+# 方法：getExceptionInfo(\Exception $e)
+# 参数：Exception $e 异常
+# 返回：异常信息数组，含有time,name,message,file,code,line,traceString,trace
+$arr = Exception::getExceptionInfo($e);
+
+
+# 设置日志写入类，设置了之后，未捕获的异常、调用printToLog方法、printTraceToLog方法可以将异常写入日志
+# 方法：setLogger($logger)
+# 参数：Psr\Log\LoggerInterface $logger 日志写入类，需要实现Psr\Log\LoggerInterface接口
+# 返回：无
+Exception::setLogger($logger);
+
+
+# 自定义捕捉异常方法，可用于捕捉未使用try...catch捕获的异常
+# 方法：handler(\Exception $e)
+# 参数：Exception $e 异常
+# 返回：无
+set_exception_handler(array('Peas\Support\Exception','handler'));
+
+
+# 输出异常信息到日志，调用setLogger方法设置了日志写入类才有效
+# 方法：printToLog(\Exception $e)
+# 参数：Exception $e 异常
+# 返回：无
+Exception::printToLog($e);
+
+
+
+
+
+
