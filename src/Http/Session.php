@@ -1,7 +1,7 @@
 <?php
 namespace Peas\Http;
 
-use Peas\Support\Traits\StaticConfigTrait;
+use Peas\Support\Traits\ConfigStaticTrait;
 
 /**
  * Peas Framework
@@ -13,7 +13,7 @@ use Peas\Support\Traits\StaticConfigTrait;
  */
 class Session
 {
-    use StaticConfigTrait;
+    use ConfigStaticTrait;
 
     /**
      * Session默认配置
@@ -27,7 +27,7 @@ class Session
      *
      * @var array
      */
-    private static $_defaultConfig = [
+    private static $_config = [
         'prefix' => 'pf_',
         'config' => [
             'session.use_cookies'    => 1,
@@ -56,7 +56,7 @@ class Session
      * 获取session
      *
      * @param  string $name session名
-     * @return mixed session值，不存在时返回null
+     * @return mixed  session值，不存在时返回null
      */
     public static function get($name)
     {
@@ -81,7 +81,7 @@ class Session
     /**
      * 清除单个session
      *
-     * @param string $name session名
+     * @param  string $name session名
      * @return void
      */
     public static function remove($name)
@@ -113,7 +113,7 @@ class Session
     /**
      * 检查session是否存在
      *
-     * @param  string $name session名
+     * @param  string  $name session名
      * @return boolean 存在返回true，不存在返回false
      */
     public static function isExists($name)

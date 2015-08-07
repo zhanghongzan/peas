@@ -1,7 +1,7 @@
 <?php
 namespace Peas\Http;
 
-use Peas\Support\Traits\StaticConfigTrait;
+use Peas\Support\Traits\ConfigStaticTrait;
 
 /**
  * Peas Framework
@@ -13,7 +13,7 @@ use Peas\Support\Traits\StaticConfigTrait;
  */
 class Cookie
 {
-    use StaticConfigTrait;
+    use ConfigStaticTrait;
 
     /**
      * 默认配置参数
@@ -27,7 +27,7 @@ class Cookie
      *
      * @var array
      */
-    private static $_defaultConfig = [
+    private static $_config = [
         'expire'   => 3600,
         'prefix'   => 'pf_',
         'path'     => '/',
@@ -40,7 +40,7 @@ class Cookie
      * 获取cookie
      *
      * @param  string $name cookie名
-     * @return mixed cookie值，不存在时返回NULL
+     * @return mixed  cookie值，不存在时返回NULL
      */
     public static function get($name)
     {
@@ -101,7 +101,7 @@ class Cookie
     /**
      * 检查cookie是否存在
      *
-     * @param  string $name cookie名
+     * @param  string  $name cookie名
      * @return boolean 存在返回TRUE，不存在返回FALSE
      */
     public static function isExists($name)
