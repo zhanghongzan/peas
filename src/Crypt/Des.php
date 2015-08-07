@@ -20,7 +20,7 @@ class Des
      *
      * @var array
      */
-    private $_defaultConfig = [
+    private $_config = [
         'mode'       => 'ecb',          // 加密模式：cbc、cfb、ecb、ofb
         'padding'    => 'PKCS5Padding', // 填充模式：PKCS5Padding、PKCS7Padding、NoPadding、ISO10126Padding
         'base64'     => true,           // 加密结果是否用base64加密
@@ -70,9 +70,7 @@ class Des
      */
     public function __construct(array $config = [])
     {
-        if (!empty($config)) {
-            $this->setConfig($config);
-        }
+        $this->setConfig($config);
     }
 
 

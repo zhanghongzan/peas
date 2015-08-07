@@ -20,7 +20,7 @@ class Aes
      *
      * @var array
      */
-    private $_defaultConfig = [
+    private $_config = [
         'mode'       => 'ecb',          // 加密模式：cbc、cfb、ecb、ofb
         'blockSize'  => 128,            // 加密位数：128、192、256
         'padding'    => 'PKCS5Padding', // 填充模式：PKCS5Padding、PKCS7Padding、NoPadding、ISO10126Padding
@@ -77,9 +77,7 @@ class Aes
      */
     public function __construct(array $config = [])
     {
-        if (!empty($config)) {
-            $this->setConfig($config);
-        }
+        $this->setConfig($config);
     }
 
 
