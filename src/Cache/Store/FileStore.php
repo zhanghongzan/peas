@@ -2,6 +2,7 @@
 namespace Peas\Cache\Store;
 
 use FilesystemIterator;
+use Peas\Support\Traits\ConfigTrait;
 
 /**
  * Peas Framework
@@ -13,24 +14,29 @@ use FilesystemIterator;
  */
 class FileStore implements StoreInterface
 {
+    use ConfigTrait;
+
     /**
-     * 文件缓存存放目录
+     * 默认配置
      *
-     * @var string
+     * @var array
      */
-    private $_directory = '';
+    private $_defaultConfig = [
+        'directory' => '', // 文件缓存存放目录
+    ];
 
 
     /**
      * 构造函数，初始化
      *
-     * @param array $config 参数，仅文件缓存存放目录有效，如['directory' => '文件缓存存放目录']
+     * @param array $config 配置参数，默认值：[<br>
+     *     'directory' => '', // 文件缓存存放目录<br>
+     * ]
      */
     public function __construct($config)
     {
-        foreach ($config as $key => $val) {
-            $this->_{$key} = $val;
-        }
+        $config = array_merge($this->_defaultConfig, $config);
+        $this->setConfig($config);
     }
 
 
@@ -47,7 +53,7 @@ class FileStore implements StoreInterface
      */
     public function clear()
     {
-        $items = new FilesystemIterator($this->_directory);
+        $items = new FilesystemIterator($this->getConfig('directory'));
         foreach ($items as $item) {
             if ($item->isDir() && !$item->isLink()) {
                 $this->_deleteDirectory($item->getPathname());
@@ -138,13 +144,14 @@ class FileStore implements StoreInterface
     {
         $key = md5($id);
         $dir = implode('/', array_slice(str_split($key, 2), 0, 2));
-        return $this->_directory . '/' . $dir . '/' . $key . '.cache';
+        return $this->getConfig('directory') . '/' . $dir . '/' . $key . '.cache';
     }
 
     /**
      * 删除目录
      *
-     * @param string $directory
+     * @param  string  $directory
+     * @return boolean 成功返回true，失败返回false
      */
     private function _deleteDirectory($directory)
     {
