@@ -5,12 +5,11 @@ namespace Peas\Support\Traits;
  * Peas Framework
  *
  * 静态属性$_config管理trait
- * 如果需要设置默认值，可以定义静态$_defaultConfig属性，示例：private static $_defaultConfig = [];
  *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-trait StaticConfigTrait
+trait ConfigStaticTrait
 {
     /**
      * 配置参数
@@ -18,13 +17,6 @@ trait StaticConfigTrait
      * @var array
      */
     protected static $_config = [];
-
-    /**
-     * 参数是否已经初始化
-     *
-     * @var boolean
-     */
-    protected static $_configInitialized = false;
 
 
     /**
@@ -36,7 +28,6 @@ trait StaticConfigTrait
      */
     public static function setConfig($name, $value = null)
     {
-        self::_initializedCheck();
         if (is_null($name)) {
             self::$_config = $value;
         } elseif (is_array($name)) {
@@ -54,22 +45,6 @@ trait StaticConfigTrait
      */
     public static function getConfig($name = '')
     {
-        self::_initializedCheck();
         return empty($name) ? self::$_config : (array_key_exists($name, self::$_config) ? self::$_config[$name] : null);
-    }
-
-    /**
-     * 初始化检测
-     *
-     * @return void
-     */
-    private static function _initializedCheck()
-    {
-        if (!self::$_configInitialized) {
-            if (isset(self::$_defaultConfig)) {
-                self::$_config = self::$_defaultConfig;
-            }
-            self::$_configInitialized = true;
-        }
     }
 }
