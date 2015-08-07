@@ -14,7 +14,7 @@ Interface StoreInterface
     /**
      * 删除缓存
      *
-     * @param  string $id 缓存ID
+     * @param  string  $id 缓存ID
      * @return boolean 成功返回true，失败返回false
      */
     public function remove($id);
@@ -29,9 +29,9 @@ Interface StoreInterface
     /**
      * 设置缓存
      *
-     * @param  string $id 缓存ID
-     * @param  mixed  $value 缓存值
-     * @param  int    $lifetime 缓存有效期（秒）
+     * @param  string  $id 缓存ID
+     * @param  mixed   $value 缓存值
+     * @param  int     $lifetime 缓存有效期（秒）
      * @return boolean 成功返回true，失败返回false
      */
     public function set($id, $value, $lifetime);
@@ -39,7 +39,7 @@ Interface StoreInterface
     /**
      * 获取缓存
      *
-     * @param  string $id 缓存ID
+     * @param  string      $id 缓存ID
      * @return mixed|false 成功返回缓存数据，失败返回false
      */
     public function get($id);
@@ -47,7 +47,7 @@ Interface StoreInterface
     /**
      * 验证缓存有效性
      *
-     * @param  string $id 缓存ID
+     * @param  string    $id 缓存ID
      * @return int|false 有效时返回最后更新时间的时间戳，无效返回false
      */
     public function test($id);

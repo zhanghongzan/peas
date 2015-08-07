@@ -1,0 +1,65 @@
+
+# 默认配置如下：
+$config = [
+    'prefix' => '',             // key前缀
+    'defaultLifetime' => 86400, // int -1表示永久有效
+    'defaultStore' => 'apc',    // 默认存储器类型，可以是apc,file,xCache，默认为apc
+    'defaultStoreConfig' => [], // 默认存储器参数，没有可不传
+];
+
+
+# 创建缓存管理实例
+$cache = new Cache($config);
+
+
+# 设置缓存管理类
+# 方法：setStore($storeType = 'apc', array $storeConfig = [])
+# 参数：string $storeType   缓存类型，可以是apc,file,xCache
+#      array  $storeConfig 需要传入的参数，没有可不传
+# 返回：无
+$cache->setStore('apc');
+$cache->setStore('xCache');
+$cache->setStore('file', ['directory' => '文件存放目录']);
+
+
+# 删除缓存
+# 方法：remove($id)
+# 参数：string $id 缓存ID
+# 返回：boolean 成功返回true，失败返回false
+$removeResult = $cache->remove('testKey');
+
+
+# 清空所有缓存记录
+# 方法：clear()
+# 参数：无
+# 返回：boolean 成功返回true，失败返回false
+$clearResult = $cache->clear();
+
+
+# 设置缓存
+# 方法：set($id, $value, $lifetime = 0)
+# 参数：string $id       缓存ID
+#      mixed  $value    缓存值
+#      int    $lifetime 缓存有效期（秒），0表示使用默认，-1表示永久有效
+# 返回：boolean 成功返回true，失败返回false
+$setResult = $cache->set('testKey', 'testValue');
+$setResult = $cache->set('testKey', 'testValue', 3600);
+
+
+# 获取缓存
+# 方法：get($id)
+# 参数：string      $id 缓存ID
+# 返回：mixed|false 成功返回缓存数据，失败返回false
+$cacheVal = $cache->get('testKey');
+
+
+# 验证缓存有效性
+# 方法：test($id)
+# 参数：string $id 缓存ID
+# 返回：int|false 有效时返回最后更新时间的时间戳，无效返回false
+$isCached = $cache->test('testKey');
+
+
+
+
+
