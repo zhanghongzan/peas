@@ -4,7 +4,10 @@ namespace Peas\Support\Traits;
 /**
  * Peas Framework
  *
- * 属性$_config管理trait
+ * 属性$_config管理trait<br>
+ * 如果需要设置默认值，可以定义$_defaultConfig属性，但是一定要调用initConfig方法初始化使默认参数能够生效，示例：<br>
+ * private static $_defaultConfig = [];<br>
+ * $this->initConfig($userConfig);<br>
  *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
@@ -18,6 +21,20 @@ trait ConfigTrait
      */
     protected $_config = [];
 
+
+    /**
+     * 初始化配置参数，此方法将传入的参数与默认参数合并，可以定义$_defaultConfig属性作为默认参数，但是一定要调用此初始化方法，不然默认参数不会生效
+     *
+     * @param  array $config 自定义参数，覆盖默认参数
+     * @return void
+     */
+    public function initConfig(array $config = [])
+    {
+        if (isset($this->_defaultConfig)) {
+            $config = array_merge($this->_defaultConfig, $config);
+        }
+        $this->setConfig($config);
+    }
 
     /**
      * 设置配置参数

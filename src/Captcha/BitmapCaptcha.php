@@ -1,6 +1,8 @@
 <?php
 namespace Peas\Captcha;
 
+use Peas\Support\Traits\ConfigTrait;
+
 /**
  * Peas Framework
  *
@@ -11,76 +13,25 @@ namespace Peas\Captcha;
  */
 class BitmapCaptcha
 {
-    /**
-     * 图片宽度(像素)，含边框，需要为4的倍数
-     *
-     * @var int
-     */
-    public $width = 72;
+    use ConfigTrait;
 
     /**
-     * 图片高度(像素)，含边框
+     * 默认配置
      *
-     * @var int
+     * @var array
      */
-    public $height = 24;
-
-    /**
-     * 字符颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
-     *
-     * @var string
-     */
-    public $fontColors = '';
-
-    /**
-     * 边框宽度
-     *
-     * @var int
-     */
-    public $borderWidth = 1;
-
-    /**
-     * 边框颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
-     *
-     * @var string
-     */
-    public $borderColor = '#D8F8AC';
-
-    /**
-     * 背景颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
-     *
-     * @var string
-     */
-    public $backgroundColor = '#FFFFFF';
-
-    /**
-     * 变形程度，数值越大可产生的最大变形程度越大
-     *
-     * @var int
-     */
-    public $deformLevel = 3;
-
-    /**
-     * 是否采用复杂形变规则
-     *
-     * @var boolean
-     */
-    public $deformComplexity = false;
-
-    /**
-     * 杂点产生概率，1为100%
-     *
-     * @var float
-     */
-    public $disturb = 0.05;
-
-    /**
-     * 最多产生干扰线数量
-     *
-     * @var int
-     */
-    public $disturbMaxLine = 5;
-
+    private $_defaultConfig = [
+        'width'            => 72,        // 图片宽度(像素)，含边框，需要为4的倍数
+        'height'           => 24,        // 图片高度(像素)，含边框
+        'fontColors'       => '',        // 字符颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
+        'borderWidth'      => 1,         // 边框宽度
+        'borderColor'      => '#D8F8AC', // 边框颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
+        'backgroundColor'  => '#FFFFFF', // 背景颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
+        'deformLevel'      => 3,         // 变形程度，数值越大可产生的最大变形程度越大
+        'deformComplexity' => false,     // 是否采用复杂形变规则
+        'disturb'          => 0.05,      // 杂点产生概率，1为100%
+        'disturbMaxLine'   => 5,         // 最多产生干扰线数量
+    ];
 
     /**
      * 1 / $this->disturb
@@ -114,11 +65,25 @@ class BitmapCaptcha
     /**
      * 初始化参数
      *
-     * @param  string $dotsFilePath 点阵文件地址，不指定则使用默认Tahoma字体24号
-     * @param  array  $config       参数名=>参数值，参数名与属性名相同
+     * @param array $config 配置参数，可覆盖默认值中的一个或者多个，默认值：[<br>
+     *     'width'            => 72,        // 图片宽度(像素)，含边框，需要为4的倍数<br>
+     *     'height'           => 24,        // 图片高度(像素)，含边框<br>
+     *     'fontColors'       => '',        // 字符颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000<br>
+     *     'borderWidth'      => 1,         // 边框宽度<br>
+     *     'borderColor'      => '#D8F8AC', // 边框颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000<br>
+     *     'backgroundColor'  => '#FFFFFF', // 背景颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000<br>
+     *     'deformLevel'      => 3,         // 变形程度，数值越大可产生的最大变形程度越大<br>
+     *     'deformComplexity' => false,     // 是否采用复杂形变规则<br>
+     *     'disturb'          => 0.05,      // 杂点产生概率，1为100%<br>
+     *     'disturbMaxLine'   => 5,         // 最多产生干扰线数量<br>
+     * ]
+     * @param string $dotsFilePath 点阵文件地址，不指定则使用默认Tahoma字体24号点阵
      */
-    public function __construct($dotsFilePath = '', array $config = [])
+    public function __construct(array $config = [], $dotsFilePath = '')
     {
+        $config = array_merge($this->_defaultConfig, $config);
+        $this->setConfig($config);
+
         foreach ($config as $key => $val) {
             $this->$key = $val;
         }
@@ -168,7 +133,7 @@ class BitmapCaptcha
      * 获取字符串的点阵数组
      *
      * @param  string $str 输出的字符串
-     * @return array 当前要输出的字符串的点阵信息
+     * @return array  当前要输出的字符串的点阵信息
      */
     private function _getDots($str)
     {
@@ -271,9 +236,10 @@ class BitmapCaptcha
     /**
      * 根据指定点阵输出图片
      *
-     * @param array $dots    完整的点阵
-     * @param int   $strLen  输出的字符串长度
-     * @param int   $lineNum 干扰线数量
+     * @param  array $dots    完整的点阵
+     * @param  int   $strLen  输出的字符串长度
+     * @param  int   $lineNum 干扰线数量
+     * @return void
      */
     private function _writeBmp($dots, $strLen, $lineNum)
     {
@@ -319,8 +285,9 @@ class BitmapCaptcha
     /**
      * 输出一定数量的指定颜色的点
      *
-     * @param int    $num   要输出点的数量
-     * @param string $color 指定点的颜色
+     * @param  int    $num   要输出点的数量
+     * @param  string $color 指定点的颜色
+     * @return void
      */
     private function _echoColorPoint($num, $color)
     {
