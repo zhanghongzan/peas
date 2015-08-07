@@ -21,7 +21,7 @@ class Cache
      *
      * @var array
      */
-    private $_defaultConfig = [
+    private $_config = [
         'prefix' => '',             // key前缀
         'defaultLifetime' => 86400, // int -1表示永久有效
         'defaultStore' => 'apc',    // 默认存储器类型，可以是apc,file,xCache，默认为apc
@@ -48,7 +48,6 @@ class Cache
      */
     public function __construct($config = [])
     {
-        $config = array_merge($this->_defaultConfig, $config);
         $this->setConfig($config);
         $this->setStore($this->getConfig('defaultStore'), $this->getConfig('defaultStoreConfig'));
     }

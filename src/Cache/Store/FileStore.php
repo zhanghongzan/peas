@@ -21,7 +21,7 @@ class FileStore implements StoreInterface
      *
      * @var array
      */
-    private $_defaultConfig = [
+    private $_config = [
         'directory' => '', // 文件缓存存放目录
     ];
 
@@ -33,9 +33,8 @@ class FileStore implements StoreInterface
      *     'directory' => '', // 文件缓存存放目录<br>
      * ]
      */
-    public function __construct($config)
+    public function __construct(array $config = [])
     {
-        $config = array_merge($this->_defaultConfig, $config);
         $this->setConfig($config);
     }
 
