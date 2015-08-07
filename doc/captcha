@@ -1,0 +1,41 @@
+
+
+# 验证码图片生成
+
+# 1、BitmapCaptcha
+# 默认配置如下：
+$config = [
+    'width'            => 72,        // 图片宽度(像素)，含边框，需要为4的倍数
+    'height'           => 24,        // 图片高度(像素)，含边框
+    'fontColors'       => '',        // 字符颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
+    'borderWidth'      => 1,         // 边框宽度
+    'borderColor'      => '#D8F8AC', // 边框颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
+    'backgroundColor'  => '#FFFFFF', // 背景颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
+    'deformLevel'      => 3,         // 变形程度，数值越大可产生的最大变形程度越大
+    'deformComplexity' => false,     // 是否采用复杂形变规则
+    'disturb'          => 0.05,      // 杂点产生概率，1为100%
+    'disturbMaxLine'   => 5,         // 最多产生干扰线数量
+];
+$captcha = new BitmapCaptcha($config);
+$captcha->show('abcd');
+
+
+# 2、SimpleImageCaptcha
+# 默认配置如下：
+$config = [
+    'width'    => 120, // 宽度
+    'height'   => 36,  // 高度
+    'font'     => '',  // 指定的字体文件地址
+    'fontSize' => 36,  // 指定字体大小
+];
+$captcha = new SimpleImageCaptcha($config);
+$captcha->show('abcd');
+
+
+
+
+
+
+
+
+

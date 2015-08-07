@@ -20,7 +20,7 @@ class BitmapCaptcha
      *
      * @var array
      */
-    private $_defaultConfig = [
+    private $_config = [
         'width'            => 72,        // 图片宽度(像素)，含边框，需要为4的倍数
         'height'           => 24,        // 图片高度(像素)，含边框
         'fontColors'       => '',        // 字符颜色，为空时随机产生，多个用','分开，如：#FF0000,#000000,#666666,#FF0000
@@ -81,17 +81,8 @@ class BitmapCaptcha
      */
     public function __construct(array $config = [], $dotsFilePath = '')
     {
-        $config = array_merge($this->_defaultConfig, $config);
         $this->setConfig($config);
-
-        foreach ($config as $key => $val) {
-            $this->$key = $val;
-        }
-        if (!empty($dotsFilePath) && is_file($dotsFilePath)) {
-            $this->_dots = include $dotsFilePath;
-        } else {
-            $this->_dots = self::_getDefaultDots();
-        }
+        $this->_dots = (!empty($dotsFilePath) && is_file($dotsFilePath)) ? include $dotsFilePath : self::_getDefaultDots();
     }
 
     /**
@@ -103,10 +94,10 @@ class BitmapCaptcha
     public function show($str = 'Peas')
     {
         // 保证图片总宽度为4的倍数，能够正常显示
-        if ($this->width % 4 > 0) {
-            $this->width = $this->width - ($this->width % 4) + 4;
+        if ($this->getConfig('width') % 4 > 0) {
+            $this->setConfig('width', $this->getConfig('width') - ($this->getConfig('width') % 4) + 4);
         }
-        $this->_disturbNum = intval(1 / $this->disturb);
+        $this->_disturbNum = intval(1 / $this->getConfig('disturb'));
 
         $strLen = strlen($str);
 
@@ -114,15 +105,15 @@ class BitmapCaptcha
         $dotsInfo = $this->_getDots($str);
         $dots = $dotsInfo['dots'];
 
-        $this->_dotsMaxHeight = $this->height - 2 * $this->borderWidth;
-        $this->_dotsMaxWidth  = intval(($this->width - 2 * $this->borderWidth) / $strLen);
+        $this->_dotsMaxHeight = $this->getConfig('height') - 2 * $this->getConfig('borderWidth');
+        $this->_dotsMaxWidth  = intval(($this->getConfig('width') - 2 * $this->getConfig('borderWidth')) / $strLen);
 
         for ($i = 0; $i < $strLen; $i ++) {
             $dots[$i] = $this->_changeShape($dots[$i]); // 点阵补全（变形处理）
         }
 
         $lineNum = 0;
-        for ($i = 0; $i < $this->disturbMaxLine; $i ++) {
+        for ($i = 0; $i < $this->getConfig('disturbMaxLine'); $i ++) {
             $lineNum += $this->_rand(0, 1);
         }
         $this->_writeBmp($this->_getFullDotsArray($dots, $strLen, $lineNum), $strLen, $lineNum);
@@ -158,8 +149,8 @@ class BitmapCaptcha
      */
     private function _getFullDotsArray($dots, $strLen, $lineNum)
     {
-        $width  = $this->width  - 2 * $this->borderWidth;
-        $height = $this->height - 2 * $this->borderWidth;
+        $width  = $this->getConfig('width')  - 2 * $this->getConfig('borderWidth');
+        $height = $this->getConfig('height') - 2 * $this->getConfig('borderWidth');
 
         /*计算需要填充的宽度*/
         $fillWidth = $width - $this->_dotsMaxWidth * $strLen;
@@ -243,29 +234,32 @@ class BitmapCaptcha
      */
     private function _writeBmp($dots, $strLen, $lineNum)
     {
+        $width = $this->getConfig('width');
+        $borderWidth = $this->getConfig('borderWidth');
+
         /*获取使用的颜色信息*/
-        $fontColors      = $this->_getColors($strLen, $this->fontColors, 0, 188);
-        $backgroundColor = $this->_getColors(1, $this->backgroundColor, 236);
-        $borderColor     = $this->_getColors(1, $this->borderColor);
+        $fontColors      = $this->_getColors($strLen, $this->getConfig('fontColors'), 0, 188);
+        $backgroundColor = $this->_getColors(1, $this->getConfig('backgroundColor'), 236);
+        $borderColor     = $this->_getColors(1, $this->getConfig('borderColor'));
         $disturbColor    = $this->_getColors($lineNum + 1, '', 66); // 多生成一个是为了保证返回的结果一定是数组，不然$lineNum为1时输出时还要判断
 
         /*计算需要填充的宽度*/
-        $fillWidth = $this->width - 2 * $this->borderWidth - $this->_dotsMaxWidth * $strLen;
+        $fillWidth = $width - 2 * $borderWidth - $this->_dotsMaxWidth * $strLen;
         $fillLeft  = intval($fillWidth / 2);
         $fillRight = $fillWidth - $fillLeft;
 
         /*BMP文件头、信息头*/
         header('Content-Type: image/bmp');
         echo "BM" . pack("V3", 54, 0, 54);
-        echo pack("V3v2V*", 0x28, $this->width, $this->height, 1, 24, 0, 0, 0, 0, 255, 0);
+        echo pack("V3v2V*", 0x28, $width, $this->getConfig('height'), 1, 24, 0, 0, 0, 0, 255, 0);
 
         /*开启边框时显示下边框*/
-        for ($i = 0; $i < $this->borderWidth; $i ++) {
-            $this->_echoColorPoint($this->width, $borderColor);
+        for ($i = 0; $i < $borderWidth; $i ++) {
+            $this->_echoColorPoint($width, $borderColor);
         }
         for ($i = $this->_dotsMaxHeight - 1; $i >= 0; $i --) {
-            $this->_echoColorPoint($this->borderWidth, $borderColor);
-            for ($k = 0, $j = $this->width - 2 * $this->borderWidth; $k < $j; $k ++) {
+            $this->_echoColorPoint($borderWidth, $borderColor);
+            for ($k = 0, $j = $width - 2 * $borderWidth; $k < $j; $k ++) {
                 if ($dots[$i][$k] > 0) {
                     echo $fontColors[$dots[$i][$k] - 1];
                 } elseif ($dots[$i][$k] == 0) {
@@ -274,11 +268,11 @@ class BitmapCaptcha
                     echo $disturbColor[abs($dots[$i][$k]) - 1];
                 }
             }
-            $this->_echoColorPoint($this->borderWidth, $borderColor);
+            $this->_echoColorPoint($borderWidth, $borderColor);
         }
         /*开启边框时显示上边框*/
-        for ($i = 0; $i < $this->borderWidth; $i ++) {
-            $this->_echoColorPoint($this->width, $borderColor);
+        for ($i = 0; $i < $borderWidth; $i ++) {
+            $this->_echoColorPoint($width, $borderColor);
         }
     }
 
@@ -368,7 +362,7 @@ class BitmapCaptcha
                 $newDots[$i] = str_repeat('0', $this->_dotsMaxWidth);
             }
         }
-        $maxMoveWidth = $this->_rand(0, $this->deformLevel); // 最大偏移量
+        $maxMoveWidth = $this->_rand(0, $this->getConfig('deformLevel')); // 最大偏移量
         if ($maxMoveWidth + $dotsWidth > $this->_dotsMaxWidth) {
             $maxMoveWidth = $this->_dotsMaxWidth - $dotsWidth;
         }
@@ -390,7 +384,7 @@ class BitmapCaptcha
                 $moveFrontNum[$i] = 0;
             } elseif ($maxMoveWidth == 0) {
                 $moveFrontNum[$i] = 0;
-            } elseif ($this->deformComplexity) {
+            } elseif ($this->getConfig('deformComplexity')) {
                 $currentMoveWay = ($currentMoveNum == 0) ? 1 : (($currentMoveNum == $maxMoveWidth) ? -1 : $currentMoveWay);
                 $moveFrontNum[$i] = $currentMoveNum = $currentMoveNum + $currentMoveWay;
             } else {
