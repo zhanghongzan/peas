@@ -18,7 +18,7 @@ interface CornTagInterface
      *
      * @param  Compiler $compiler 当前编译器
      * @param  string   $tagStr   标签内容
-     * @return string 解析之后的内容
+     * @return string   解析之后的内容
      */
     public function begin(&$compiler, $tagStr);
 
@@ -27,7 +27,7 @@ interface CornTagInterface
      *
      * @param  Compiler $compiler  当前编译器
      * @param  string   $blockText 结束标签与开始标签之间的内容
-     * @return string 解析之后的内容
+     * @return string   解析之后的内容
      */
     public function end(&$compiler, &$blockText);
 }

@@ -20,7 +20,7 @@ class FileWriter extends AbstractWriter
      *
      * @var array
      */
-    private $_defaultConfig = [
+    private $_config = [
         'dir'         => '', // Log文件目录
         'destination' => '', // 文件名，设置为空时将按时间生成Y-m-d格式的文件名
         'fileSize'    => 20, // 单位：M，单个日志文件大小限制，超过大小系统将自动备份
@@ -35,6 +35,7 @@ class FileWriter extends AbstractWriter
 
     /**
      * 初始化
+     *
      * @param array $config [
      *     'dir'         => '',  // Log文件目录
      *     'destination' => '',  // 文件名，设置为空时将按时间生成Y-m-d格式的文件名
@@ -43,9 +44,7 @@ class FileWriter extends AbstractWriter
      */
     public function __construct(array $config = [])
     {
-        if (!empty($config)) {
-            $this->setConfig($config);
-        }
+        $this->setConfig($config);
         if ($this->getConfig('fileSize') < 1) {
             $this->setConfig('fileSize', 1);
         }

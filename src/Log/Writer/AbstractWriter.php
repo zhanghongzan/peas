@@ -25,7 +25,7 @@ abstract class AbstractWriter implements WriterInterface
     /**
      * 设置格式化类
      *
-     * @param FormatterInterface $formatter
+     * @param  FormatterInterface $formatter
      * @return WriterInterface
      */
     public function setFormatter(FormatterInterface $formatter)

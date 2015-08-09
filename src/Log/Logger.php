@@ -11,6 +11,26 @@ use Psr\Log\LogLevel;
  *
  * 日志读写类
  *
+ * $config 默认值：[<br>
+ *     'loggers' => 'default', // 启用的日志写入器，多个用','分开<br>
+ *     'default' => [          // 日志写入器配置，键名为写入器名称<br>
+ *         'writer' => 'syslog',<br>
+ *         'level'  => ['emergency', 'alert', 'critical', 'error', 'info'],<br>
+ *     ],<br>
+ * ]<br>
+ *
+ * 写入器配置说明：<br>
+ * 'name' => [                    // name为自定义写入器名称<br>
+ *     'writer'       => 'file',  // 指定写入器类型，自带file、syslog，支持自定义，但是自定义写入器需实现接口WriterInterface，类命名为Xxx或者XxxWriter（xxx即为写入器类型）<br>
+ *     'writerConfig' => [        // 传入写入器构造函数的参数，自带syslog无需此参数，file需要以下示例参数<br>
+ *         'dir'         => '',   // file类型：Log文件目录<br>
+ *         'destination' => '',   // file类型：文件名，设置为空时将按时间生成Y-m-d格式的文件名<br>
+ *         'fileSize'    => 20,   // file类型：单位：M，单个日志文件大小限制，超过大小系统将自动备份<br>
+ *     ],<br>
+ *     'formatter'    => 'base',  // 格式化器名称，自带base，支持自定义，自定义类型需实现FormatterInterface接口，类命名为Xxx或者XxxFormatter（xxx即为格式化器类型）<br>
+ *     'level'        => ['emergency', 'alert', 'critical', 'error', 'info'], // 支持写入的日志等级<br>
+ * ]
+ *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
@@ -19,17 +39,16 @@ class Logger extends AbstractLogger
     use ConfigTrait;
 
     /**
-     * 日志配置
-     * [
-     *     'record'      => true,                                                // 日志保存开关，是否保存日志
-     *     'recordLevel' => ['emergency', 'alert', 'critical', 'error', 'info'], // 允许记录的日志级别，level名称详见Psr\Log\LogLevel
-     * ]
+     * 日志默认配置
      *
      * @var array
      */
-    private $_defaultConfig = [
-        'record'      => true,
-        'recordLevel' => ['emergency', 'alert', 'critical', 'error', 'info'],
+    private $_config = [
+        'loggers' => 'default', // 启用的日志写入器，多个用','分开
+        'default' => [          // 日志写入器配置，键名为写入器名称
+            'writer' => 'syslog',
+            'level'  => ['emergency', 'alert', 'critical', 'error', 'info'],
+        ],
     ];
 
     /**
@@ -49,41 +68,78 @@ class Logger extends AbstractLogger
     ];
 
     /**
-     * 日志写入实体类
+     * 日志写入实体类数组
      *
-     * @var WriterInterface
+     * @var array ['name' => WriterInterface, ...]
      */
-    private $_writer = null;
+    private $_writers = [];
 
 
     /**
      * 初始化
      *
-     * @param WriterInterface $writer
-     * @param array $config 默认值：[
-     *     'record'      => true,                                                // 日志保存开关，是否保存日志
-     *     'recordLevel' => ['emergency', 'alert', 'critical', 'error', 'info'], // 允许记录的日志级别，level名称详见Psr\Log\LogLevel
-     * ]
+     * @param array $config
      */
-    public function __construct(WriterInterface $writer = null, array $config = [])
+    public function __construct(array $config = [])
     {
-        if (!is_null($writer)) {
-            $this->setWriter($writer);
-        }
-        if (!empty($config)) {
-            $this->setConfig($config);
+        $this->setConfig($config);
+        $writerNames = explode(',', $this->getConfig('loggers'));
+        foreach ($writerNames as $item) {
+            $item = trim($item);
+            $this->addWriter($item, $this->getConfig($item));
         }
     }
 
     /**
-     * 设置格式化类
+     * 添加日志写入器
      *
-     * @param  WriterInterface $writer
+     * @param  string $writerName 写入器名称
+     * @param  array  $config     写入器配置
      * @return Logger
      */
-    public function setWriter(WriterInterface $writer)
+    public function addWriter($writerName, array $config)
     {
-        $this->_writer = $writer;
+        $writerClassName = $this->_getClassName($config['writer']);
+        $writer = isset($config['writerConfig']) ? new $writerClassName($config['writerConfig']) : new $writerClassName();
+
+        $formatterClassName = isset($config['writerConfig']) ? $this->_getClassName($config['writerConfig']) : 'BaseFormatter';
+        if ($formatterClassName) {
+            $writer->setFormatter(new $formatterClassName());
+        }
+        $this->setConfig($writerName, $config);
+        $this->_writers[$writerName] = $writer;
+        return $this;
+    }
+
+    /**
+     * 检查类是否存在
+     *
+     * @param  string       $className    类名
+     * @param  string       $classAddName 类名后缀
+     * @return string|false 存在则返回存在的类名，不存在则返回false
+     */
+    private function _getClassName($className, $classAddName)
+    {
+        $className = ucfirst($className);
+        if (!class_exists($className)) {
+            $className .= $classAddName;
+            if (!class_exists($className)) {
+                return false;
+            }
+        }
+        return $className;
+    }
+
+    /**
+     * 删除指定写入器
+     *
+     * @param  string $writerName 写入器名称
+     * @return Logger
+     */
+    public function removeWriter($writerName)
+    {
+        $this->setConfig($writerName, []);
+        unset($this->_writers[$writerName]);
         return $this;
     }
 
@@ -97,7 +153,7 @@ class Logger extends AbstractLogger
      */
     public function log($level, $message, array $context = [])
     {
-        if (!$this->getConfig('record') || !in_array($level, $this->getConfig('recordLevel')) || is_null($this->_writer)) {
+        if (empty($this->_writers)) {
             return;
         }
         $logInfo = [
@@ -107,6 +163,11 @@ class Logger extends AbstractLogger
             'message' => $message,
             'context' => $context,
         ];
-        $this->_writer->write($logInfo);
+        foreach ($this->_writers as $writerName => $writerItem) {
+            $itemConf = $this->getConfig($writerName);
+            if (in_array($level, $itemConf['level'])) {
+                $writerItem->write($logInfo);
+            }
+        }
     }
 }

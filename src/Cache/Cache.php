@@ -67,7 +67,7 @@ class Cache
     {
         $storeName = ucfirst($storeType);
         if (!class_exists($storeName)) {
-            $storeName = $storeName . 'Store';
+            $storeName .= 'Store';
         }
         $this->_store = new $storeName($storeConfig);
     }
