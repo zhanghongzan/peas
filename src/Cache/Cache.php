@@ -9,6 +9,9 @@ use Peas\Support\Traits\ConfigTrait;
  *
  * 缓存操作类
  *
+ * 自定义存储器说明：
+ * 自定义存储器是指使用非peas自带存储器，自定义类型类名必须为XxxStore（xxx即为该存储器名称），且需实现Peas\Cache\Store\StoreInterface接口，且确保能够自动加载
+ *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
@@ -22,10 +25,10 @@ class Cache
      * @var array
      */
     private $_config = [
-        'prefix' => '',             // key前缀
-        'defaultLifetime' => 86400, // int -1表示永久有效
-        'defaultStore' => 'apc',    // 默认存储器类型，可以是apc,file,xCache，默认为apc
-        'defaultStoreConfig' => [], // 默认存储器参数，没有可不传
+        'prefix'             => '',    // key前缀
+        'defaultLifetime'    => 86400, // int -1表示永久有效
+        'defaultStore'       => 'apc', // 默认存储器类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称
+        'defaultStoreConfig' => [],    // 默认存储器参数，没有可不传
     ];
 
     /**
@@ -40,10 +43,10 @@ class Cache
      * 初始化，设置默认缓存管理类
      *
      * @param array $config 配置参数，默认值：[<br>
-     *     'prefix' => '',             // key前缀<br>
-     *     'defaultLifetime' => 86400, // int -1表示永久有效<br>
-     *     'defaultStore' => 'apc',    // 默认存储器类型，可以是apc,file,xCache，默认为apc<br>
-     *     'defaultStoreConfig' => [], // 默认存储器参数，没有可不传<br>
+     *     'prefix'             => '',    // key前缀<br>
+     *     'defaultLifetime'    => 86400, // int -1表示永久有效<br>
+     *     'defaultStore'       => 'apc', // 默认存储器类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称<br>
+     *     'defaultStoreConfig' => [],    // 默认存储器参数，没有可不传<br>
      * ]
      */
     public function __construct($config = [])
@@ -56,13 +59,16 @@ class Cache
     /**
      * 设置缓存管理类
      *
-     * @param  string $storeType   缓存类型，可以是apc,file,xCache
+     * @param  string $storeType   缓存类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称
      * @param  array  $storeConfig 需要传入的参数，没有可不传
      * @return void
      */
     public function setStore($storeType = 'apc', array $storeConfig = [])
     {
-        $storeName = 'Peas\\Cache\\Store\\' . ucfirst($storeType) . 'Store';
+        $storeName = ucfirst($storeType) . 'Store';
+        if (!class_exists($storeName)) {
+            $storeName = 'Peas\\Cache\\Store\\' . $storeName;
+        }
         $this->_store = new $storeName($storeConfig);
     }
 

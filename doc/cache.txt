@@ -1,9 +1,16 @@
 
+
+# 缓存管理
+
+# 自定义存储器说明：
+# 自定义存储器是指使用非peas自带存储器，自定义类型类名必须为XxxStore（xxx即为该存储器名称），且需实现Peas\Cache\Store\StoreInterface接口，且确保能够自动加载
+
+
 # 默认配置如下：
 $config = [
     'prefix' => '',             // key前缀
     'defaultLifetime' => 86400, // int -1表示永久有效
-    'defaultStore' => 'apc',    // 默认存储器类型，可以是apc,file,xCache，默认为apc
+    'defaultStore' => 'apc',    // 默认存储器类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称
     'defaultStoreConfig' => [], // 默认存储器参数，没有可不传
 ];
 
@@ -14,8 +21,8 @@ $cache = new Cache($config);
 
 # 设置缓存管理类
 # 方法：setStore($storeType = 'apc', array $storeConfig = [])
-# 参数：string $storeType   缓存类型，可以是apc,file,xCache
-#      array  $storeConfig 需要传入的参数，没有可不传
+# 参数：string $storeType   缓存类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称
+#     array  $storeConfig 需要传入的参数，没有可不传
 # 返回：无
 $cache->setStore('apc');
 $cache->setStore('xCache');
@@ -39,8 +46,8 @@ $clearResult = $cache->clear();
 # 设置缓存
 # 方法：set($id, $value, $lifetime = 0)
 # 参数：string $id       缓存ID
-#      mixed  $value    缓存值
-#      int    $lifetime 缓存有效期（秒），0表示使用默认，-1表示永久有效
+#     mixed  $value    缓存值
+#     int    $lifetime 缓存有效期（秒），0表示使用默认，-1表示永久有效
 # 返回：boolean 成功返回true，失败返回false
 $setResult = $cache->set('testKey', 'testValue');
 $setResult = $cache->set('testKey', 'testValue', 3600);
