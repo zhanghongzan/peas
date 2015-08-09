@@ -6,6 +6,9 @@ namespace Peas\Config;
  *
  * 配置管理类
  *
+ * 支持以'.'作为分割的参数名，如：<br>
+ * key为test.a、test.b、test.c，获取key为test的值则获取到结果为['a' => 'value a', 'b' => 'value b', 'c' => 'value c']<br>
+ *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */

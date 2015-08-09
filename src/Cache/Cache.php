@@ -9,8 +9,8 @@ use Peas\Support\Traits\ConfigTrait;
  *
  * 缓存操作类
  *
- * 自定义存储器说明：
- * 自定义存储器是指使用非peas自带存储器，自定义类型类名必须为XxxStore（xxx即为该存储器名称），且需实现Peas\Cache\Store\StoreInterface接口，且确保能够自动加载
+ * 自定义存储器说明：<br>
+ * 自定义存储器是指使用非peas自带存储器，自定义类型类名必须为XxxStore（xxx即为该存储器名称），且需实现Peas\Cache\Store\StoreInterface接口，且确保能够自动加载<br>
  *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
