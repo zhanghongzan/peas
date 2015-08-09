@@ -27,19 +27,17 @@ class SendCloud
     /**
      * 初始化，设置参数
      *
-     * @param array $config 如：[
-     *     'apiUrl'          => 'https://sendcloud.sohu.com/webapi/mail.send.json', // SendCloud地址
-     *     'apiUser'         => '', // SendCloud中配置的发信子账号
-     *     'apiKey'          => '', // Sendcloud中分配的API_KEY
-     *     'defaultFrom'     => '', // 默认发件邮箱
-     *     'defaultFromName' => '', // 默认发件人名称
+     * @param array $config 如：[<br>
+     *     'apiUrl'          => 'https://sendcloud.sohu.com/webapi/mail.send.json', // SendCloud地址<br>
+     *     'apiUser'         => '', // SendCloud中配置的发信子账号<br>
+     *     'apiKey'          => '', // Sendcloud中分配的API_KEY<br>
+     *     'defaultFrom'     => '', // 默认发件邮箱<br>
+     *     'defaultFromName' => '', // 默认发件人名称<br>
      * ]
      */
     public function __construct(array $config = [])
     {
-        if (!empty($config)) {
-            $this->setConfig($config);
-        }
+        $this->setConfig($config);
     }
 
     /**

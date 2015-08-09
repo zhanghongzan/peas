@@ -23,7 +23,7 @@ class Configure
      * 获取配置
      *
      * @param  string $key 配置名，不传此参数则表示获取所有配置
-     * @return mixed 配置值，不存在时返回null
+     * @return mixed  配置值，不存在时返回null
      */
     public static function get($key = null)
     {
@@ -102,7 +102,7 @@ class Configure
     /**
      * 检查配置是否存在
      *
-     * @param  string $key 配置名
+     * @param  string  $key 配置名
      * @return boolean 存在返回true，不存在返回false
      */
     public static function isExists($key)

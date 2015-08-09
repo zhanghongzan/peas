@@ -67,12 +67,12 @@ class Aes
     /**
      * 构造函数，初始化参数
      *
-     * @param array $config 默认值：[
-     *     'mode'       => 'ecb',          // 加密模式：cbc、cfb、ecb、ofb
-     *     'blockSize'  => 128,            // 加密位数：128、192、256
-     *     'padding'    => 'PKCS5Padding', // 填充模式：PKCS5Padding、PKCS7Padding、NoPadding、ISO10126Padding
-     *     'base64'     => true,           // 加密结果是否用base64加密
-     *     'defaultKey' => '',             // 默认密钥，加解密时未传入密钥则使用默认
+     * @param array $config 默认值：[<br>
+     *     'mode'       => 'ecb',          // 加密模式：cbc、cfb、ecb、ofb<br>
+     *     'blockSize'  => 128,            // 加密位数：128、192、256<br>
+     *     'padding'    => 'PKCS5Padding', // 填充模式：PKCS5Padding、PKCS7Padding、NoPadding、ISO10126Padding<br>
+     *     'base64'     => true,           // 加密结果是否用base64加密<br>
+     *     'defaultKey' => '',             // 默认密钥，加解密时未传入密钥则使用默认<br>
      * ]
      */
     public function __construct(array $config = [])

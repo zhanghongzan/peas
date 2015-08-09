@@ -17,22 +17,15 @@ class Cookie
 
     /**
      * 默认配置参数
-     * [
-     *     'expire'   => 3600,  // cookie默认有效期
-     *     'prefix'   => 'pf_', // cookie名称前缀
-     *     'path'     => '/',   // cookie路径
-     *     'domain'   => '',    // cookie域名
-     *     'httpOnly' => false, // 是否使用HttpOnly
-     * ];
      *
      * @var array
      */
     private static $_config = [
-        'expire'   => 3600,
-        'prefix'   => 'pf_',
-        'path'     => '/',
-        'domain'   => '',
-        'httpOnly' => false,
+        'expire'   => 3600,  // cookie默认有效期
+        'prefix'   => 'pf_', // cookie名称前缀
+        'path'     => '/',   // cookie路径
+        'domain'   => '',    // cookie域名
+        'httpOnly' => false, // 是否使用HttpOnly
     ];
 
 
