@@ -1,0 +1,168 @@
+
+# 加密算法
+
+
+## 以下为AES部分 #########################################################################
+
+
+# 默认配置
+$config = [
+    'mode'       => 'ecb',          // 加密模式：cbc、cfb、ecb、ofb
+    'blockSize'  => 128,            // 加密位数：128、192、256
+    'padding'    => 'PKCS5Padding', // 填充模式：PKCS5Padding、PKCS7Padding、NoPadding、ISO10126Padding
+    'base64'     => true,           // 加密结果是否用base64加密
+    'defaultKey' => '',             // 默认密钥，加解密时未传入密钥则使用默认
+];
+
+# 创建AES实例
+$aes = new Aes($config);
+
+
+# 生成IV，根据当前区块长度生成对应长度IV
+# 方法：createIv()
+# 参数：无
+# 返回：string IV
+$iv = $aes->createIv();
+
+
+# 加密
+# 方法：encode($data, $key = null, $iv = null)
+# 参数：string $data 明文，待加密数据
+#     string $key  密钥，不设置则使用默认密钥
+#     string $iv   IV，如果不设置则自动调用createIv方法生成，可通过$this->iv获取
+# 返回：string 密文
+$data = $aes->encode('test data');
+$data = $aes->encode('test data', 'test key');
+$data = $aes->encode('test data', 'test key', 'test iv');
+
+
+
+
+# 解密
+# 方法：decode($data, $key = null, $iv = null)
+# 参数：string $data 密文，待解密数据
+#     string $key  密钥，不设置则使用默认密钥
+#     string $iv   IV
+# 返回：string 明文
+$data = $aes->decode('adfeedfasdfeeeegh4gadd');
+$data = $aes->decode('adfeedfasdfeeeegh4gadd', 'test key');
+$data = $aes->decode('adfeedfasdfeeeegh4gadd', 'test key', 'test iv');
+
+
+
+
+
+
+
+
+## 以下为DES部分 #########################################################################
+
+# 默认配置
+$config = [
+    'mode'       => 'ecb',          // 加密模式：cbc、cfb、ecb、ofb
+    'padding'    => 'PKCS5Padding', // 填充模式：PKCS5Padding、PKCS7Padding、NoPadding、ISO10126Padding
+    'base64'     => true,           // 加密结果是否用base64加密
+    'defaultKey' => '',             // 默认密钥，加解密时未传入密钥则使用默认
+];
+
+
+# 创建DES实例
+$des = new Des($config);
+
+
+# 生成IV
+# 方法：createIv()
+# 参数：无
+# 返回：string IV
+$iv = $des->createIv();
+
+
+# 加密
+# 方法：encode($data, $key = null, $iv = null)
+# 参数：string $data 明文，待加密数据
+#     string $key  密钥，不设置则使用默认密钥
+#     string $iv   IV，如果不设置则自动调用createIv方法生成，可通过$this->iv获取
+# 返回：string 密文
+$data = $des->encode('test data');
+$data = $des->encode('test data', 'test key');
+$data = $des->encode('test data', 'test key', 'test iv');
+
+
+
+
+# 解密
+# 方法：decode($data, $key = null, $iv = null)
+# 参数：string $data 密文，待解密数据
+#     string $key  密钥，不设置则使用默认密钥
+#     string $iv   IV
+# 返回：string 明文
+$data = $des->decode('adfeedfasdfeeeegh4gadd');
+$data = $des->decode('adfeedfasdfeeeegh4gadd', 'test key');
+$data = $des->decode('adfeedfasdfeeeegh4gadd', 'test key', 'test iv');
+
+
+
+
+
+
+
+## 以下为填充管理部分 #########################################################################
+
+# PKCS5Padding填充模式
+# 方法：PKCS5Padding($data)
+# 参数：string $data 待填充的内容
+# 返回：string 填充完成的内容
+Padding::PKCS5Padding($data);
+
+
+# 去除PKCS5Padding填充的内容
+# 方法：trimPKCS5Padding($text)
+# 参数：string $text 待处理的内容
+# 返回：string 去除填充后的内容
+Padding::trimPKCS5Padding($text);
+
+
+# PKCS7Padding填充模式
+# 方法：PKCS7Padding($data, $blockSize = 8)
+# 参数：string $data      待填充的内容
+#     int    $blockSize 数据块长度，默认为8
+# 返回：string 填充完成的内容
+Padding::PKCS7Padding($data);
+
+
+# 去除PKCS7Padding填充的内容
+# 方法：trimPKCS7Padding($text)
+# 参数：string $text 待处理的内容
+# 返回：string 去除填充后的内容
+Padding::trimPKCS7Padding($text);
+
+
+# NoPadding填充模式，无填充，不做任何处理，直接返回
+# 方法：NoPadding($data)
+# 参数：string $data
+# 返回：string
+Padding::NoPadding($data);
+
+
+# 去除NoPadding填充的内容，因为本身无任何填充，所以不做任何处理，直接返回
+# 方法：trimNoPadding($text)
+# 参数：string $text
+# 返回：string
+Padding::trimNoPadding($text);
+
+
+# ISO10126Padding填充模式
+# 方法：ISO10126Padding($data, $blockSize = 8)
+# 参数：string $data      待填充的内容
+#     int    $blockSize 数据块长度，默认为8
+# 返回：string 填充完成的内容
+Padding::ISO10126Padding($data);
+
+
+# 去除trimISO10126Padding填充的内容
+# 方法：trimISO10126Padding($text)
+# 参数：string $text 待处理的内容
+# 返回：string 去除填充后的内容
+Padding::trimISO10126Padding($text);
+
+

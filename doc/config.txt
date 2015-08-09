@@ -1,0 +1,41 @@
+
+# 配置管理，支持以'.'作为分割的参数名，如
+# key为test.a、test.b、test.c，获取key为test的值则获取到结果为['a' => 'value a', 'b' => 'value b', 'c' => 'value c']
+
+
+# 获取配置
+# 方法：get($key = null)
+# 参数：string $key 配置名，不传此参数则表示获取所有配置
+# 返回：mixed 配置值，不存在时返回null
+$testConfig = Configure::get('test');
+
+
+# 清除配置
+# 方法：remove($key)
+# 参数：string $key 配置名
+# 返回：无
+Configure::remove('test');
+
+
+# 设置配置
+# 方法：set($key, $value)
+# 参数：string $key 配置名，为null表示初始化配置
+#     mixed  $value 值
+# 返回：无
+Configure::set('test', 'test val');
+
+
+# 清空所有配置
+# 方法：clear()
+# 参数：无
+# 返回：无
+Configure::clear();
+
+
+# 检查配置是否存在
+# 方法：isExists($key)
+# 参数：string $key 配置名
+# 返回：boolean 存在返回true，不存在返回false
+$isConfExists = Configure::isExists('test');
+
+
