@@ -1,7 +1,6 @@
 <?php
 namespace Peas\Log;
 
-use Peas\Support\Traits\ConfigTrait;
 use Peas\Log\Writer\WriterInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
@@ -11,7 +10,7 @@ use Psr\Log\LogLevel;
  *
  * 日志读写类
  *
- * $config 默认值：[<br>
+ * $config 配置示例：[<br>
  *     'loggers' => 'default', // 启用的日志写入器，多个用','分开<br>
  *     'default' => [          // 日志写入器配置，键名为写入器名称<br>
  *         'writer' => 'syslog',<br>
@@ -36,19 +35,13 @@ use Psr\Log\LogLevel;
  */
 class Logger extends AbstractLogger
 {
-    use ConfigTrait;
-
     /**
      * 日志默认配置
      *
      * @var array
      */
     private $_config = [
-        'loggers' => 'default', // 启用的日志写入器，多个用','分开
-        'default' => [          // 日志写入器配置，键名为写入器名称
-            'writer' => 'syslog',
-            'level'  => ['emergency', 'alert', 'critical', 'error', 'info'],
-        ],
+        'loggers' => '', // 启用的日志写入器，多个用','分开
     ];
 
     /**
@@ -74,6 +67,13 @@ class Logger extends AbstractLogger
      */
     private $_writers = [];
 
+    /**
+     * 等级控制数组
+     *
+     * @var array ['name' => [], ...]
+     */
+    private $_levels = [];
+
 
     /**
      * 初始化
@@ -82,11 +82,11 @@ class Logger extends AbstractLogger
      */
     public function __construct(array $config = [])
     {
-        $this->setConfig($config);
-        $writerNames = explode(',', $this->getConfig('loggers'));
+        $this->_config = array_merge($this->_config, $config);
+        $writerNames = explode(',', $this->_config['loggers']);
         foreach ($writerNames as $item) {
             $item = trim($item);
-            $this->addWriter($item, $this->getConfig($item));
+            $this->addWriter($item, $this->_config[$item]);
         }
     }
 
@@ -102,11 +102,11 @@ class Logger extends AbstractLogger
         $writerClassName = $this->_getClassName($config['writer']);
         $writer = isset($config['writerConfig']) ? new $writerClassName($config['writerConfig']) : new $writerClassName();
 
-        $formatterClassName = isset($config['writerConfig']) ? $this->_getClassName($config['writerConfig']) : 'BaseFormatter';
+        $formatterClassName = isset($config['formatter']) ? $this->_getClassName($config['formatter']) : 'BaseFormatter';
         if ($formatterClassName) {
             $writer->setFormatter(new $formatterClassName());
         }
-        $this->setConfig($writerName, $config);
+        $this->_levels[$writerName]  = isset($config['level']) ? $config['level'] : ['emergency', 'alert', 'critical', 'error', 'info'];
         $this->_writers[$writerName] = $writer;
         return $this;
     }
@@ -138,8 +138,8 @@ class Logger extends AbstractLogger
      */
     public function removeWriter($writerName)
     {
-        $this->setConfig($writerName, []);
         unset($this->_writers[$writerName]);
+        unset($this->_levels[$writerName]);
         return $this;
     }
 
@@ -157,15 +157,14 @@ class Logger extends AbstractLogger
             return;
         }
         $logInfo = [
-            'datetime' => time(),
-            'level' => $level,
+            'datetime'  => time(),
+            'level'     => $level,
             'levelCode' => self::$_levelCode[$level],
-            'message' => $message,
-            'context' => $context,
+            'message'   => $message,
+            'context'   => $context,
         ];
         foreach ($this->_writers as $writerName => $writerItem) {
-            $itemConf = $this->getConfig($writerName);
-            if (in_array($level, $itemConf['level'])) {
+            if (in_array($level, $this->_levels[$writerName])) {
                 $writerItem->write($logInfo);
             }
         }
