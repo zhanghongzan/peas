@@ -29,7 +29,7 @@ interface DriverInterface
      * 执行查询语句，获取数组形式的结果集
      *
      * @param  string $sql SQL语句
-     * @return array 数组形式的结果集数组
+     * @return array  数组形式的结果集数组
      * @throws DbException 204 执行失败时抛出
      */
     public function select($sql);
@@ -38,7 +38,7 @@ interface DriverInterface
      * 获取结果数
      *
      * @param  string $sql SQL语句
-     * @return int 结果数
+     * @return int    结果数
      * @throws DbException 204 执行失败时抛出
      */
     public function getNumRows($sql);
@@ -49,7 +49,7 @@ interface DriverInterface
      * @param  string $sql       SQL语句
      * @param  string $className 要实例化的类的名称，如果没有指定，返回stdClass对象
      * @param  array  $params    可选的传递给$className对象的构造函数参数数组
-     * @return array 对象形式的结果集数组
+     * @return array  对象形式的结果集数组
      * @throws DbException 204 执行失败时抛出
      */
     public function selectForObject($sql, $className = '', array $params = []);
@@ -58,7 +58,7 @@ interface DriverInterface
      * 执行插入语句
      *
      * @param  string $sql SQL语句
-     * @return int 产生的AUTO_INCREMENT值，没有则为0
+     * @return int    产生的AUTO_INCREMENT值，没有则为0
      * @throws DbException 204 执行失败时抛出
      */
     public function insert($sql);
@@ -67,7 +67,7 @@ interface DriverInterface
      * 执行更新语句
      *
      * @param  string $sql SQL语句
-     * @return int 影响到多少行
+     * @return int    影响到多少行
      * @throws DbException 204 执行失败时抛出
      */
     public function update($sql);
@@ -76,7 +76,7 @@ interface DriverInterface
      * 执行删除语句
      *
      * @param  string $sql SQL语句
-     * @return int 影响到多少行
+     * @return int    影响到多少行
      * @throws DbException 204 执行失败时抛出
      */
     public function delete($sql);
@@ -85,7 +85,7 @@ interface DriverInterface
      * 执行SQL语句
      *
      * @param  string $sql SQL语句
-     * @return int 影响到多少行
+     * @return int    影响到多少行
      * @throws DbException 204 执行失败时抛出
      */
     public function execute($sql);

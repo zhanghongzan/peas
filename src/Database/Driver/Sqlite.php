@@ -112,8 +112,9 @@ class Sqlite implements DriverInterface
     /**
      * 执行SQL语句
      *
-     * @param  string  $sql
-     * @param  boolean $ifQuery 是否为查询
+     * @param  string   $sql
+     * @param  boolean  $ifQuery 是否为查询
+     * @return resource 执行结果
      * @throws DbException
      */
     private function _doExecute($sql, $ifQuery = false)
@@ -164,7 +165,7 @@ class Sqlite implements DriverInterface
      *
      * @param  string $className 对象名，不为空表示获取对象形式的结果集，为空表示获取数组形式的结果集，默认为空
      * @param  array  $params 获取对象形式结果时，传入构造函数的参数
-     * @return array 结果集
+     * @return array  结果集
      */
     private function _getAll($className = '', array $params = [])
     {

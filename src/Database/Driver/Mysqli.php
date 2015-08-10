@@ -53,15 +53,15 @@ class Mysqli implements DriverInterface
     /**
      * 初始化连接
      *
-     * @param array $config 配置参数 [
-     *     'host'      => 'localhost', // 服务器地址
-     *     'port'      => 3306,        // 端口
-     *     'username'  => 'root',      // 用户名
-     *     'password'  => 'admin',     // 密码
-     *     'database'  => 'peas',      // 数据库名
-     *     'charset'   => 'utf8',      // 数据库编码默认采用utf8
-     *     'pcconnect' => false,       // 持久连接
-     * ]
+     * @param array $config 配置参数 [<br>
+     *     'host'      => 'localhost', // 服务器地址<br>
+     *     'port'      => 3306,        // 端口<br>
+     *     'username'  => 'root',      // 用户名<br>
+     *     'password'  => 'admin',     // 密码<br>
+     *     'database'  => 'peas',      // 数据库名<br>
+     *     'charset'   => 'utf8',      // 数据库编码默认采用utf8<br>
+     *     'pcconnect' => false,       // 持久连接<br>
+     * ]<br>
      * @throws DbException 201:不支持mysqli时抛出，202:连接数据库出错时抛出
      */
     public function __construct(array $config = [])
@@ -179,7 +179,7 @@ class Mysqli implements DriverInterface
      *
      * @param  string $className 对象名，不为空表示获取对象形式的结果集，为空表示获取数组形式的结果集，默认为空
      * @param  array  $params 获取对象形式结果时，传入构造函数的参数
-     * @return array 结果集
+     * @return array  结果集
      */
     private function _getAll($className = '', array $params = [])
     {

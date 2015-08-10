@@ -17,7 +17,7 @@ class DbException extends Exception
      * 调用父类的构造方法
      *
      * @param string $message 异常信息
-     * @param int $code 默认：200
+     * @param int    $code    默认：200
      */
     public function __construct($message, $code = 200)
     {
