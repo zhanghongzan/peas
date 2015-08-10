@@ -7,26 +7,33 @@ use Peas\Database\DbDebug;
 /**
  * Peas Framework
  *
- * PDO封装类
+ * sqlite数据库操作类
  *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class Pdo implements DriverInterface
+class SqliteDriver implements DriverInterface
 {
     /**
-     * PDO实例
+     * 数据库打开模式
      *
-     * @var PDO
+     * @var int
      */
-    private $_pdo = null;
+    public $mode = 0666;
 
     /**
-     * 当前查询
+     * 数据库连接
      *
-     * @var PDOStatement
+     * @var resource
      */
-    private $_pdoStatement = null;
+    private $_link = null;
+
+    /**
+     * 当前查询标识符
+     *
+     * @var resource
+     */
+    private $_queryId = null;
 
     /**
      * 最近执行的SQL语句
@@ -42,36 +49,23 @@ class Pdo implements DriverInterface
      */
     private $_transTimes;
 
-    /**
-     * 数据库版本信息
-     *
-     * @var string
-     */
-    private $_version = '';
-
 
     /**
      * 初始化连接
      *
-     * @param array $config 配置参数
-     * @throws DbException 201:不支持PDO时抛出，202:连接数据库出错时抛出
+     * @param  array $config 配置参数
+     * @throws DbException 201:不支持Sqlite时抛出，202:连接数据库出错时抛出
      */
     public function __construct($config)
     {
-        if (!class_exists('PDO')) {
-            throw new DbException('[Db]不支持PDO', 201);
+        if (!extension_loaded('sqlite')) {
+            throw new DbException('[Db]不支持Sqlite数据库', 201);
         }
-        try {
-            if ($config['pcconnect']) {
-                $this->_pdo = new PDO($config['dsn'], $config['username'], $config['password'], [PDO::ATTR_PERSISTENT => true]);
-            } else {
-                $this->_pdo = new PDO($config['dsn'], $config['username'], $config['password']);
-            }
-            if (!empty($config['charset'])) {
-                $this->_pdo->exec('SET NAMES ' . $config['charset']);
-            }
-        } catch (\PDOException $e) {
-            throw new DbException('[PDO]连接数据库出错:' . $e->getMessage(), 202);
+        $functionName = $config['pcconnect'] ? 'sqlite_popen' : 'sqlite_open';
+        $this->mode   = array_key_exists('mode', $config) ? $config['mode'] : $this->mode;
+        $this->_link  = $functionName($config['database'], $this->mode);
+        if (!$this->_link) {
+            throw new DbException('[Sqlite]连接数据库[' . $config['database'] . ']出错', 202);
         }
     }
 
@@ -88,10 +82,7 @@ class Pdo implements DriverInterface
      */
     public function getVersion()
     {
-        if (empty($this->_version)) {
-            $this->_version = $this->_pdo->getAttribute(PDO::ATTR_SERVER_INFO);
-        }
-        return $this->_version;
+        return '';
     }
 
     /**
@@ -99,7 +90,7 @@ class Pdo implements DriverInterface
      */
     public function getLink()
     {
-        return $this->_pdo;
+        return $this->_link;
     }
 
     /**
@@ -107,12 +98,7 @@ class Pdo implements DriverInterface
      */
     public function getError()
     {
-        $errorArr = $this->_pdo->errorInfo();
-        // 有错误信息
-        if (count($errorArr) >= 3 && !empty($errorArr[2])) {
-            return $errorArr[2] . '(SQL:' . $this->getSql() . ')';
-        }
-        return '';
+        return sqlite_error_string(sqlite_last_error($this->_link));
     }
 
     /**
@@ -126,32 +112,27 @@ class Pdo implements DriverInterface
     /**
      * 执行SQL语句
      *
-     * @param  string $sql
-     * @return void
+     * @param  string   $sql
+     * @param  boolean  $ifQuery 是否为查询
+     * @return resource 执行结果
      * @throws DbException
      */
-    private function _doExecute($sql)
+    private function _doExecute($sql, $ifQuery = false)
     {
-        if (!$this->_pdo) {
-            throw new DbException('[PDO]SQL执行失败：数据库连接有误', 204);
+        if (!$this->_link) {
+            throw new DbException('[Sqlite]SQL执行失败：数据库连接有误', 204);
         }
-        if (!empty($this->_pdoStatement)) {
+        if ($this->_queryId) {
             $this->free();
         }
-
-        $this->_sql = $sql;
         $startTime = microtime(true);
-        try {
-            $result = $this->_pdo->prepare($sql);
-            $result->execute();
-        } catch (\PDOException $e) {
-            throw new DbException('[PDO]SQL执行失败：' . $e->getMessage(), 204);
-        }
+        $result = $ifQuery ? sqlite_query($this->_link, $sql) : sqlite_exec($this->_link, $sql);
         DbDebug::debug($sql, $startTime, microtime(true));
 
-        if ($result === false) {
-            throw new DbException('[PDO]SQL执行失败：' . $this->getError(), 204);
+        if (false === $result) {
+            throw new DbException("[Sqlite]" . $this->getError(), 204);
         }
+        $this->_sql = $sql;
         return $result;
     }
 
@@ -160,22 +141,23 @@ class Pdo implements DriverInterface
      */
     public function execute($sql)
     {
-        $result = $this->_doExecute($sql);
+        $this->_doExecute($sql);
         DbDebug::$writeNum ++;
-        return $result->rowCount();
+        return sqlite_changes($this->_link);
     }
 
     /**
      * 执行查询语句
      *
      * @param  string $sql
-     * @return void
+     * @return int
      */
     private function _query($sql)
     {
-        $result = $this->_doExecute($sql);
-        $this->_pdoStatement = $result;
+        $result = $this->_doExecute($sql, true);
+        $this->_queryId = $result;
         DbDebug::$queryNum ++;
+        return sqlite_num_rows($this->_queryId);
     }
 
     /**
@@ -187,14 +169,19 @@ class Pdo implements DriverInterface
      */
     private function _getAll($className = '', array $params = [])
     {
-        if (empty($className)) {
-            return $this->_pdoStatement->fetchAll(PDO::FETCH_ASSOC);
-        }
         $result = [];
-        $row = $this->_pdoStatement->fetchObject($className, $params);
-        while ($row) {
-            $result[] = $row;
-            $row = $this->_pdoStatement->fetchObject($className, $params);
+        $numRows = sqlite_num_rows($this->_queryId);
+        if ($numRows > 0) {
+            if (empty($className)) {
+                for ($i = 0; $i < $numRows; $i ++) {
+                    $result[$i] = sqlite_fetch_array($this->_queryId, SQLITE_ASSOC);
+                }
+            } else {
+                for ($i = 0; $i < $numRows; $i ++) {
+                    $result[$i] = sqlite_fetch_object($this->_queryId, $className, $params, SQLITE_ASSOC);
+                }
+            }
+            sqlite_seek($this->_queryId, 0);
         }
         return $result;
     }
@@ -204,9 +191,7 @@ class Pdo implements DriverInterface
      */
     public function getNumRows($sql)
     {
-        $sql = 'SELECT count(0) nums from (' . $sql . ') Peas_Database_E';
-        $this->_query($sql);
-        return $this->_pdoStatement->fetchObject()->nums;
+        return $this->_query($sql);
     }
 
     /**
@@ -249,7 +234,7 @@ class Pdo implements DriverInterface
     public function insert($sql)
     {
         $this->execute($sql);
-        return $this->_pdo->lastInsertId();
+        return sqlite_last_insert_rowid($this->_link);
     }
 
     /**
@@ -258,9 +243,9 @@ class Pdo implements DriverInterface
     public function rollback()
     {
         if ($this->_transTimes > 0) {
-            $result = $this->_pdo->rollBack();
-            if (!$result) {
-                throw new DbException('[PDO]事务回滚失败：' . $this->getError(), 206);
+            $result = sqlite_query($this->_link, 'ROLLBACK TRANSACTION');
+            if(!$result) {
+                throw new DbException('[Sqlite]事务回滚失败：' . $this->getError(), 206);
             }
             $this->_transTimes = 0;
         }
@@ -271,11 +256,11 @@ class Pdo implements DriverInterface
      */
     public function startTrans()
     {
-        if (!$this->_pdo) {
+        if (!$this->_link) {
             return false;
         }
         if ($this->_transTimes == 0) {
-            $this->_pdo->beginTransaction();
+            sqlite_query($this->_link, 'BEGIN TRANSACTION');
         }
         $this->_transTimes++;
         return true;
@@ -287,9 +272,9 @@ class Pdo implements DriverInterface
     public function commit()
     {
         if ($this->_transTimes > 0) {
-            $result = $this->_pdo->commit();
-            if (!$result) {
-                throw new DbException('[PDO]事务提交失败：' . $this->getError(), 205);
+            $result = sqlite_query($this->_link, 'COMMIT TRANSACTION');
+            if(!$result){
+                throw new DbException('[Sqlite]事务提交失败：' . $this->getError(), 205);
             }
             $this->_transTimes = 0;
         }
@@ -300,7 +285,7 @@ class Pdo implements DriverInterface
      */
     public function free()
     {
-        $this->_pdoStatement = null;
+        $this->_queryId = null;
     }
 
     /**
@@ -308,10 +293,10 @@ class Pdo implements DriverInterface
      */
     public function close()
     {
-        if (!empty($this->_pdoStatement)) {
-            $this->free();
+        if ($this->_link && !sqlite_close($this->_link)){
+            throw new DbException('[Sqlite]关闭连接失败：' . $this->getError(), 203);
         }
-        $this->_pdo = null;
+        $this->_link = null;
     }
 
     /**
@@ -319,6 +304,6 @@ class Pdo implements DriverInterface
      */
     public function escapeString($str)
     {
-        return addslashes($str);
+        return sqlite_escape_string($str);
     }
 }

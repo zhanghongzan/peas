@@ -12,7 +12,7 @@ use Peas\Database\DbDebug;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class Mysqli implements DriverInterface
+class MysqliDriver implements DriverInterface
 {
     /**
      * 数据库连接
