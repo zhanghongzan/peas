@@ -1,7 +1,6 @@
 <?php
 namespace Peas\Log;
 
-use Peas\Log\Writer\WriterInterface;
 use Psr\Log\AbstractLogger;
 use Psr\Log\LogLevel;
 
@@ -20,7 +19,7 @@ use Psr\Log\LogLevel;
  *
  * 写入器配置说明：<br>
  * 'name' => [                    // name为自定义写入器名称<br>
- *     'writer'       => 'file',  // 指定写入器类型，自带file、syslog，支持自定义，但是自定义写入器需实现接口WriterInterface，类命名为Xxx或者XxxWriter（xxx即为写入器类型）<br>
+ *     'writer'       => 'file',  // 指定写入器类型，自带file、syslog，支持自定义，但是自定义写入器需实现接口Peas\Log\Writer\WriterInterface，类命名为Xxx或者XxxWriter（xxx即为写入器类型）<br>
  *     'writerConfig' => [        // 传入写入器构造函数的参数，自带syslog无需此参数，file需要以下示例参数<br>
  *         'dir'         => '',   // file类型：Log文件目录<br>
  *         'destination' => '',   // file类型：文件名，设置为空时将按时间生成Y-m-d格式的文件名<br>
