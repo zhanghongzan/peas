@@ -11,26 +11,6 @@ namespace Peas\Database;
  */
 class Db
 {
-    /**
-     * $dbConfig = array(
-     *     'link_0' => array(
-     *
-     *     ),
-     *     'link_1' => array()
-     * );
-     *
-     * @var unknown
-     */
-    public $a;
-
-    public function __construct(array $config)
-    {
-    }
-
-    public function getWriteLink()
+    public static function init()
     {}
-
-    public function getReadLink()
-    {
-    }
 }
