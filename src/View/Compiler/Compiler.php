@@ -9,102 +9,102 @@ use Peas\View\CornException;
  *
  * 模板引擎编译类
  *
- * 注：以下{、}分别表示左右定界符
+ * 注：以下{、}分别表示左右定界符<br>
  *
- * 定界符:
- * {_L_}表示输出左定界符，{_R_}表示输出右定界符
+ * 定界符:<br>
+ * {_L_}表示输出左定界符，{_R_}表示输出右定界符<br>
  *
- * 注释:
- * 1. #号之后的所有内容，如：{这里可以写代码 #注释内容...}
- * 2. 一对*号之间的内容，如：{这里可以写代码 *注释内容* 这里可以写代码}
- * 说明：字符#和*用\#和\*表示
+ * 注释:<br>
+ * 1. #号之后的所有内容，如：{这里可以写代码 #注释内容...}<br>
+ * 2. 一对*号之间的内容，如：{这里可以写代码 *注释内容* 这里可以写代码}<br>
+ * 说明：字符#和*用\#和\*表示<br>
  *
- * 标签属性：
- * 标签名="标签值" || 标签名='标签值'
- * 用双引号包裹时标签值里的双引号须转义\"
- * 用单引号包裹时标签值里的单引号须转义\'
+ * 标签属性：<br>
+ * 标签名="标签值" || 标签名='标签值'<br>
+ * 用双引号包裹时标签值里的双引号须转义\"<br>
+ * 用单引号包裹时标签值里的单引号须转义\'<br>
  *
- * 输出变量：
- * 等号开头表示输出
- * 以'$'开头默认为变量输出，可以设置default属性表示该变量!isset时的默认值
- * 如：{$test} {$test['name'] default="zhz"}
+ * 输出变量：<br>
+ * 等号开头表示输出<br>
+ * 以'$'开头默认为变量输出，可以设置default属性表示该变量!isset时的默认值<br>
+ * 如：{$test} {$test['name'] default="zhz"}<br>
  *
- * p标签：
- * 标签内的内容作为php原生代码
- * 如：{p 不含定界符的php代码}
+ * p标签：<br>
+ * 标签内的内容作为php原生代码<br>
+ * 如：{p 不含定界符的php代码}<br>
  *
- * php标签：
- * 开始标签与结束标签之前的内容作为php原生代码
- * {php}这里是php代码{/php}
+ * php标签：<br>
+ * 开始标签与结束标签之前的内容作为php原生代码<br>
+ * {php}这里是php代码{/php}<br>
  *
- * literal标签：
- * 标签区域内的数据将被当作文本处理，不进行任何解析
- * 如：{literal}任意字符，包括{}定界符{/literal}
+ * literal标签：<br>
+ * 标签区域内的数据将被当作文本处理，不进行任何解析<br>
+ * 如：{literal}任意字符，包括{}定界符{/literal}<br>
  *
- * if、elseif、else标签：
- * 语法同php，逻辑语句外围括号可写也可省略
- * 如：
- * {if($a > 0)}...{elseif $a<0}...{else}...{/if}
+ * if、elseif、else标签：<br>
+ * 语法同php，逻辑语句外围括号可写也可省略<br>
+ * 如：<br>
+ * {if($a > 0)}...{elseif $a<0}...{else}...{/if}<br>
  *
- * foreach、foreachelse标签
- * 语法同php，语句外围括号可写也可省略，foreachelse标签处理遍历的数组empty时的情况
- * 如：
- * {foreach $test as $key=>$val}...{foreachelse}...{/foreach}
+ * foreach、foreachelse标签<br>
+ * 语法同php，语句外围括号可写也可省略，foreachelse标签处理遍历的数组empty时的情况<br>
+ * 如：<br>
+ * {foreach $test as $key=>$val}...{foreachelse}...{/foreach}<br>
  *
- * for标签：
- * 语法同php，语句外围括号可写也可省略
- * 如：
- * {for (expr1; expr2; expr3)}...{/for} 或者 {for expr1; expr2; expr3}...{/for}
+ * for标签：<br>
+ * 语法同php，语句外围括号可写也可省略<br>
+ * 如：<br>
+ * {for (expr1; expr2; expr3)}...{/for} 或者 {for expr1; expr2; expr3}...{/for}<br>
  *
- * while标签：
- * 语法同php，语句外围括号可写也可省略
- * 如：
- * {while (expr)}...{/while} 或者  {while expr}...{/while}
+ * while标签：<br>
+ * 语法同php，语句外围括号可写也可省略<br>
+ * 如：<br>
+ * {while (expr)}...{/while} 或者  {while expr}...{/while}<br>
  *
- * break、continue标签
- * {break}、{continue}
- *
- *
- *
- * 以上全部可以使用原生php替代，模板标签仅仅提供了另外一种形式而已，以下标签不同，每个标签都包含自己特殊的业务逻辑
- *
- *
- * nocache标签
- * 标签区域内的数据不进行缓存
- *
- * include标签
- * 载入模板文件，参数：file必填，模板文件地址，可以使用变量，其它参数将作为要载入的模板文件变量传入
- * 如{include file="User/Index.test.php" test='test'}
+ * break、continue标签<br>
+ * {break}、{continue}<br>
  *
  *
  *
- * 模板布局
- * layout标签：
- * 指定当前模板的布局模板
- * 参数：name 布局文件模板地址（相对于模板根目录）
- * 如：
- * {layout name="layout.php"}
+ * 以上全部可以使用原生php替代，模板标签仅仅提供了另外一种形式而已，以下标签不同，每个标签都包含自己特殊的业务逻辑<br>
  *
- * layoutHolder标签：
- * 用于模板布局文件，表示布局空间
- * 参数：name 布局空间名称
- * 如：
- * {layoutHolder name="test"}
  *
- * layoutContent标签：
- * 指定替换模板布局文件中指定布局空间的内容
- * 参数：name 布局空间名称
- * 如：
- * {layoutContent name="test"}这里的内容将替换模板文件中的名为test的布局空间{/layoutContent}
+ * nocache标签<br>
+ * 标签区域内的数据不进行缓存<br>
+ *
+ * include标签<br>
+ * 载入模板文件，参数：file必填，模板文件地址，可以使用变量，其它参数将作为要载入的模板文件变量传入<br>
+ * 如{include file="User/Index.test.php" test='test'}<br>
  *
  *
  *
+ * 模板布局<br>
+ * layout标签：<br>
+ * 指定当前模板的布局模板<br>
+ * 参数：name 布局文件模板地址（相对于模板根目录）<br>
+ * 如：<br>
+ * {layout name="layout.php"}<br>
  *
- * 标签扩展：
- * 命名规范：
- *     类名为标签名首字母大写 . 'Tag'，如：TestTag
- * 需要实现的方法：
- *     实现标签类接口：CornTagInterface
+ * layoutHolder标签：<br>
+ * 用于模板布局文件，表示布局空间<br>
+ * 参数：name 布局空间名称<br>
+ * 如：<br>
+ * {layoutHolder name="test"}<br>
+ *
+ * layoutContent标签：<br>
+ * 指定替换模板布局文件中指定布局空间的内容<br>
+ * 参数：name 布局空间名称<br>
+ * 如：<br>
+ * {layoutContent name="test"}这里的内容将替换模板文件中的名为test的布局空间{/layoutContent}<br>
+ *
+ *
+ *
+ *
+ * 标签扩展：<br>
+ * 命名规范：<br>
+ *     类名为标签名首字母大写 . 'Tag'，如：TestTag<br>
+ * 需要实现的方法：<br>
+ *     实现标签类接口：CornTagInterface<br>
  *
  *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
@@ -183,7 +183,7 @@ class Compiler
      * 初始化
      *
      * @param CornTemplate $template 创建该编译器的模板引擎实体
-     * @param array $config 参数名=>参数值，参数名与属性名相同
+     * @param array        $config   参数名=>参数值，参数名与属性名相同
      */
     public function __construct(&$template, array $config = [])
     {
@@ -283,10 +283,10 @@ class Compiler
     }
 
     /**
-     * 清除注释以及两边的空白，注释形式:
-     * 1. #注释内容...
-     * 2. *注释内容*
-     * 使用\*和\#表示*和#字符
+     * 清除注释以及两边的空白，注释形式:<br>
+     * 1. #注释内容...<br>
+     * 2. *注释内容*<br>
+     * 使用\*和\#表示*和#字符<br>
      *
      * @param  string $tag 需要处理的字符串
      * @return string 处理完成的字符串
@@ -363,7 +363,7 @@ class Compiler
     /**
      * 加载插件
      *
-     * @param  string $pluginName 插件名称
+     * @param  string       $pluginName 插件名称
      * @return object|false 插件实例，加载失败返回false
      */
     private function _loadPlugin($pluginName)
@@ -448,7 +448,7 @@ class Compiler
      * 根据参数字符串提取参数
      *
      * @param  string $paramStr 参数字符串
-     * @return array 已分离的参数，参数名为键名，参数值为值(已去掉外围双引号)
+     * @return array  已分离的参数，参数名为键名，参数值为值(已去掉外围双引号)
      */
     public function getParams($paramStr)
     {

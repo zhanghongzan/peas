@@ -163,7 +163,7 @@ class CornTemplate
      * 获取模板变量
      *
      * @param  string $varName 变量名，为空时表示获取所有
-     * @return mixed 当前模板变量数组或者单个变量的值，不存在返回null
+     * @return mixed  当前模板变量数组或者单个变量的值，不存在返回null
      */
     public function getAssign($varName = '')
     {
@@ -203,7 +203,7 @@ class CornTemplate
     /**
      * 检查模板文件是否存在
      *
-     * @param  string $template 模板文件相对地址，不包括模板文件根目录地址
+     * @param  string  $template 模板文件相对地址，不包括模板文件根目录地址
      * @return boolean 存在返回true，不存在返回false
      */
     public function templateExists($template)
@@ -214,9 +214,9 @@ class CornTemplate
     /**
      * 检查缓存文件是否存在
      *
-     * @param  string $template  模板文件相对地址，不包括模板文件根目录地址
-     * @param  string $cacheId   缓存标记，默认为空
-     * @param  int    $cacheLife 缓存有效期（秒），默认为CornTemplate::CACHELIFE_DEFAULT，参考常量：CornTemplate::CACHELIFE_FOREVER(永不过期)、CornTemplate::CACHELIFE_DEFAULT(使用默认配置)
+     * @param  string  $template  模板文件相对地址，不包括模板文件根目录地址
+     * @param  string  $cacheId   缓存标记，默认为空
+     * @param  int     $cacheLife 缓存有效期（秒），默认为CornTemplate::CACHELIFE_DEFAULT，参考常量：CornTemplate::CACHELIFE_FOREVER(永不过期)、CornTemplate::CACHELIFE_DEFAULT(使用默认配置)
      * @return boolean 存在返回true，不存在返回false
      */
     public function isCached($template, $cacheId = null, $cacheLife = CornTemplate::CACHELIFE_DEFAULT)
@@ -296,7 +296,7 @@ class CornTemplate
     /**
      * 检查创建文件目录，目录不存在时创建
      *
-     * @param  string $dir 目录完整路径
+     * @param  string  $dir 目录完整路径
      * @return boolean 成功返回true，失败返回false
      */
     private function _makeDir($dir)
@@ -316,9 +316,9 @@ class CornTemplate
     /**
      * 获取文件地址
      *
-     * @param  string $template  模板文件相对地址，不包括模板文件根目录地址
-     * @param  string $fileType  文件类型，'template':模板文件， 'compile':编译文件， 'cache':缓存文件
-     * @param  string $cacheId   缓存标记，默认为null
+     * @param  string $template 模板文件相对地址，不包括模板文件根目录地址
+     * @param  string $fileType 文件类型，'template':模板文件， 'compile':编译文件， 'cache':缓存文件
+     * @param  string $cacheId  缓存标记，默认为null
      * @return string 完整地址
      */
     private function _getFilePath($template, $fileType = 'template', $cacheId = null)
@@ -338,8 +338,8 @@ class CornTemplate
     /**
      * 检查指定缓存是否存在且有效
      *
-     * @param  string $cachePath 缓存文件完整地址
-     * @param  int    $cacheLife 缓存有效期（秒），参考常量：CornTemplate::CACHELIFE_FOREVER(永不过期)、CornTemplate::CACHELIFE_DEFAULT(使用默认配置)
+     * @param  string  $cachePath 缓存文件完整地址
+     * @param  int     $cacheLife 缓存有效期（秒），参考常量：CornTemplate::CACHELIFE_FOREVER(永不过期)、CornTemplate::CACHELIFE_DEFAULT(使用默认配置)
      * @return boolean 存在返回true，不存在返回false
      */
     private function _cacheExists($cachePath, $cacheLife)
@@ -429,7 +429,7 @@ class CornTemplate
     /**
      * 根据缓存有效期参数获取实际缓存有效期信息
      *
-     * @param  int $cacheLife
+     * @param  int   $cacheLife
      * @return array [是否启用缓存，缓存实际有效期秒数]
      */
     private function _getCacheLifeInfo($cacheLife)

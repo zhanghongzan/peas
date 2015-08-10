@@ -57,7 +57,7 @@ class Tags
      * 文本标签
      *
      * @param  Compiler $compiler
-     * @return string 固定返回空字符串''
+     * @return string   固定返回空字符串''
      * @throws CornException
      */
     public static function literalEndTag(&$compiler)
@@ -347,7 +347,7 @@ class Tags
      * include标签，载入模板文件
      *
      * @param  Compiler $compiler
-     * @param  string $tagStr 参数：file必填，模板文件地址，可以使用变量，其它参数将作为要载入的模板文件变量传入
+     * @param  string   $tagStr 参数：file必填，模板文件地址，可以使用变量，其它参数将作为要载入的模板文件变量传入
      * @return string
      * @throws CornException
      */
@@ -396,7 +396,7 @@ class Tags
      *
      * @param  Compiler $compiler
      * @param  string   $tagStr
-     * @return string 如<!-- __CORN_LAYOUT_HOLDER_BASE__ -->
+     * @return string   如<!-- __CORN_LAYOUT_HOLDER_BASE__ -->
      */
     public static function layoutHolderTag(&$compiler, $tagStr)
     {
@@ -410,8 +410,8 @@ class Tags
      * 参数：name 布局模块名称
      *
      * @param  Compiler $compiler
-     * @param  string $tagStr
-     * @return string 如<!-- __CORN_LAYOUT_CONTENT_BEGIN_BASE__ -->
+     * @param  string   $tagStr
+     * @return string   如<!-- __CORN_LAYOUT_CONTENT_BEGIN_BASE__ -->
      */
     public static function layoutContentTag(&$compiler, $tagStr)
     {
