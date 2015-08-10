@@ -9,6 +9,6 @@ namespace Peas\Database;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class Distribute
+class DbLink
 {
 }
