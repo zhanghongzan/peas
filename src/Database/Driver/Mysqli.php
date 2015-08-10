@@ -2,7 +2,7 @@
 namespace Peas\Database\Driver;
 
 use Peas\Database\DbException;
-use Peas\Database\Debug;
+use Peas\Database\DbDebug;
 
 /**
  * Peas Framework
@@ -141,7 +141,7 @@ class Mysqli implements DriverInterface
         }
         $startTime = microtime(true);
         $result = $this->_link->query($sql);
-        Debug::debug($sql, $startTime, microtime(true));
+        DbDebug::debug($sql, $startTime, microtime(true));
 
         if (false === $result) {
             throw new DbException('[MySqli]SQL执行失败：' . $this->getError(), 204);
@@ -156,7 +156,7 @@ class Mysqli implements DriverInterface
     public function execute($sql)
     {
         $this->_doExecute($sql);
-        Debug::$writeNum ++;
+        DbDebug::$writeNum ++;
         return $this->_link->affected_rows;
     }
 
@@ -170,7 +170,7 @@ class Mysqli implements DriverInterface
     {
         $result = $this->_doExecute($sql);
         $this->_queryId = $result;
-        Debug::$queryNum ++;
+        DbDebug::$queryNum ++;
         return $this->_queryId->num_rows;
     }
 

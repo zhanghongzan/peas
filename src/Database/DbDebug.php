@@ -9,7 +9,7 @@ namespace Peas\Database;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class Debug
+class DbDebug
 {
     /**
      * 数据库查询次数

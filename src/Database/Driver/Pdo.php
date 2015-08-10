@@ -2,7 +2,7 @@
 namespace Peas\Database\Driver;
 
 use Peas\Database\DbException;
-use Peas\Database\Debug;
+use Peas\Database\DbDebug;
 
 /**
  * Peas Framework
@@ -147,7 +147,7 @@ class Pdo implements DriverInterface
         } catch (\PDOException $e) {
             throw new DbException('[PDO]SQL执行失败：' . $e->getMessage(), 204);
         }
-        Debug::debug($sql, $startTime, microtime(true));
+        DbDebug::debug($sql, $startTime, microtime(true));
 
         if ($result === false) {
             throw new DbException('[PDO]SQL执行失败：' . $this->getError(), 204);
@@ -161,7 +161,7 @@ class Pdo implements DriverInterface
     public function execute($sql)
     {
         $result = $this->_doExecute($sql);
-        Debug::$writeNum ++;
+        DbDebug::$writeNum ++;
         return $result->rowCount();
     }
 
@@ -175,7 +175,7 @@ class Pdo implements DriverInterface
     {
         $result = $this->_doExecute($sql);
         $this->_pdoStatement = $result;
-        Debug::$queryNum ++;
+        DbDebug::$queryNum ++;
     }
 
     /**

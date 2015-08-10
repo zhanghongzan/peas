@@ -2,7 +2,7 @@
 namespace Peas\Database\Driver;
 
 use Peas\Database\DbException;
-use Peas\Database\Debug;
+use Peas\Database\DbDebug;
 
 /**
  * Peas Framework
@@ -127,7 +127,7 @@ class Sqlite implements DriverInterface
         }
         $startTime = microtime(true);
         $result = $ifQuery ? sqlite_query($this->_link, $sql) : sqlite_exec($this->_link, $sql);
-        Debug::debug($sql, $startTime, microtime(true));
+        DbDebug::debug($sql, $startTime, microtime(true));
 
         if (false === $result) {
             throw new DbException("[Sqlite]" . $this->getError(), 204);
@@ -142,7 +142,7 @@ class Sqlite implements DriverInterface
     public function execute($sql)
     {
         $this->_doExecute($sql);
-        Debug::$writeNum ++;
+        DbDebug::$writeNum ++;
         return sqlite_changes($this->_link);
     }
 
@@ -156,7 +156,7 @@ class Sqlite implements DriverInterface
     {
         $result = $this->_doExecute($sql, true);
         $this->_queryId = $result;
-        Debug::$queryNum ++;
+        DbDebug::$queryNum ++;
         return sqlite_num_rows($this->_queryId);
     }
 
