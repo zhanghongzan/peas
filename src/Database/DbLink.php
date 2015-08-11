@@ -555,18 +555,22 @@ class DbLink
     /**
      * 创建数据库连接
      *
-     * @param  string $driver 驱动名称，系统支持'pdo'、'mysqli'、'sqlite'三种，支持自定义，类名需设置为Xxx或者XxxDriver，需要实现DriverInterface接口，并确保已经加载或者可以自动加载
+     * @param  string $driver 驱动名称，系统支持'pdo'、'mysqli'、'sqlite'三种，支持自定义，需要实现DriverInterface接口，自定义驱动名称需要为完整的带命名空间的类名，如：Peas\Database\Driver\PdoDriver
      * @param  array  $config 连接配置参数
      * @return DriverInterface
      * @throws DbException 201
      */
     private static function _createLink($driver, array $config)
     {
-        $className = ucfirst($driver);
-        if (class_exists($className)) {
-            return new $className($config);
+        $className = $driver;
+        if (!class_exists($className)) {
+            $className = 'Peas\Database\Driver\\' . ucfirst($driver) . 'Driver';
+            if (!class_exists($className)) {
+                throw new DbException('[DB]不支持' . $driver . '类型的数据库', 201);
+                return null;
+            }
         }
-        throw new DbException('[DB]不支持' . $driver . '类型的数据库', 201);
+        return new $className($config);
     }
 
     /**

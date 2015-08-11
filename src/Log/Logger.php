@@ -19,13 +19,13 @@ use Psr\Log\LogLevel;
  *
  * 写入器配置说明：<br>
  * 'name' => [                    // name为自定义写入器名称<br>
- *     'writer'       => 'file',  // 指定写入器类型，自带file、syslog，支持自定义，但是自定义写入器需实现接口Peas\Log\Writer\WriterInterface，类命名为Xxx或者XxxWriter（xxx即为写入器类型）<br>
+ *     'writer'       => 'file',  // 指定写入器类型，自带file、syslog，支持自定义，但是自定义写入器需实现接口Peas\Log\Writer\WriterInterface，传入完整名称如：Peas\Log\Writer\FlieWriter<br>
  *     'writerConfig' => [        // 传入写入器构造函数的参数，自带syslog无需此参数，file需要以下示例参数<br>
  *         'dir'         => '',   // file类型：Log文件目录<br>
  *         'destination' => '',   // file类型：文件名，设置为空时将按时间生成Y-m-d格式的文件名<br>
  *         'fileSize'    => 20,   // file类型：单位：M，单个日志文件大小限制，超过大小系统将自动备份<br>
  *     ],<br>
- *     'formatter'    => 'base',  // 格式化器名称，自带base，支持自定义，自定义类型需实现FormatterInterface接口，类命名为Xxx或者XxxFormatter（xxx即为格式化器类型）<br>
+ *     'formatter'    => 'base',  // 格式化器名称，自带base，支持自定义，自定义类型需实现FormatterInterface接口，传入完整名称如：Peas\Log\Formatter\BaseFormatter<br>
  *     'level'        => ['emergency', 'alert', 'critical', 'error', 'info'], // 支持写入的日志等级<br>
  * ]
  *
@@ -98,35 +98,23 @@ class Logger extends AbstractLogger
      */
     public function addWriter($writerName, array $config)
     {
-        $writerClassName = $this->_getClassName($config['writer']);
+        $writerClassName = $config['writer'];
+        if (!class_exists($writerClassName)) {
+            $writerClassName = 'Peas\Log\Writer\\' . ucfirst($writerClassName) . 'Writer';
+        }
         $writer = isset($config['writerConfig']) ? new $writerClassName($config['writerConfig']) : new $writerClassName();
 
-        $formatterClassName = isset($config['formatter']) ? $this->_getClassName($config['formatter']) : 'BaseFormatter';
-        if ($formatterClassName) {
+        if (isset($config['formatter'])) {
+            $formatterClassName = $config['formatter'];
+            if (!class_exists($formatterClassName)) {
+                $formatterClassName = 'Peas\Log\Formatter\\' . ucfirst($formatterClassName) . 'Formatter';
+            }
             $writer->setFormatter(new $formatterClassName());
         }
+
         $this->_levels[$writerName]  = isset($config['level']) ? $config['level'] : ['emergency', 'alert', 'critical', 'error', 'info'];
         $this->_writers[$writerName] = $writer;
         return $this;
-    }
-
-    /**
-     * 检查类是否存在
-     *
-     * @param  string       $className    类名
-     * @param  string       $classAddName 类名后缀
-     * @return string|false 存在则返回存在的类名，不存在则返回false
-     */
-    private function _getClassName($className, $classAddName)
-    {
-        $className = ucfirst($className);
-        if (!class_exists($className)) {
-            $className .= $classAddName;
-            if (!class_exists($className)) {
-                return false;
-            }
-        }
-        return $className;
     }
 
     /**
