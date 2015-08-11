@@ -10,7 +10,8 @@ use Peas\Support\Traits\ConfigTrait;
  * 缓存操作类
  *
  * 自定义存储器说明：<br>
- * 自定义存储器是指使用非peas自带存储器，自定义类型类名必须为Xxx或者XxxStore（xxx即为该存储器名称），且需实现Peas\Cache\Store\StoreInterface接口，且确保能够自动加载<br>
+ * 自定义存储器是指使用非peas自带存储器，需实现Peas\Cache\Store\StoreInterface接口，且确保能够自动加载<br>
+ * 在传入参数时，自定义存储器名称需要为完整的带命名空间的类名，如：Peas\Cache\Store\ApcStore<br>
  *
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
@@ -59,15 +60,14 @@ class Cache
     /**
      * 设置缓存管理类
      *
-     * @param  string $storeType   缓存类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称
+     * @param  string $storeName   缓存类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称
      * @param  array  $storeConfig 需要传入的参数，没有可不传
      * @return void
      */
-    public function setStore($storeType = 'apc', array $storeConfig = [])
+    public function setStore($storeName = 'apc', array $storeConfig = [])
     {
-        $storeName = ucfirst($storeType);
         if (!class_exists($storeName)) {
-            $storeName .= 'Store';
+            $storeName = 'Peas\Cache\Store\\' . ucfirst($storeName) . 'Store';
         }
         $this->_store = new $storeName($storeConfig);
     }
