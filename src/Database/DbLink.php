@@ -648,7 +648,7 @@ class DbLink
             } else {
                 $result = $link->selectForObject($sql);
                 foreach ($result as $key => $val) {
-                    $resultClassRef = new ReflectionClass($className);
+                    $resultClassRef = new \ReflectionClass($className);
                     $resultClass = $resultClassRef->newInstanceArgs($classParam);
                     foreach ($propertyMap as $mapKey => $mapVal) {
                         if (property_exists($val, $mapKey)) {

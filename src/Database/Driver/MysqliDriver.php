@@ -69,7 +69,7 @@ class MysqliDriver implements DriverInterface
         if (!class_exists('mysqli')) {
             throw new DbException('[Db]不支持mysqli', 201);
         }
-        $this->_link = new mysqli($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
+        $this->_link = new \mysqli($config['host'], $config['username'], $config['password'], $config['database'], $config['port']);
         if (mysqli_connect_errno()) {
             throw new DbException('[MySqli]连接数据库[' . $config['host'] . '.' . $config['database'] . ']出错：' . mysqli_connect_error(), 202);
         }

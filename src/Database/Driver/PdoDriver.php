@@ -1,6 +1,7 @@
 <?php
 namespace Peas\Database\Driver;
 
+use \PDO;
 use Peas\Database\DbException;
 use Peas\Database\DbDebug;
 
