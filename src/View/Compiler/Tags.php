@@ -233,7 +233,7 @@ class Tags
         if ($openTag == 'foreach') {
             $compiler->popStack('foreach');
             return '<?php endforeach; endif ?>';
-        } else if ($openTag == 'foreachelse') {
+        } elseif ($openTag == 'foreachelse') {
             $compiler->popStack('foreachelse');
             $compiler->popStack('foreach');
             return '<?php endif ?>';
@@ -469,10 +469,10 @@ class Tags
             if (is_string($tokens[$i])) {
                 $lastSpace = true;
                 $stripStr  = rtrim($stripStr) . $tokens[$i];
-            } else if ($tokens[$i][0] == T_WHITESPACE && !$lastSpace) {
+            } elseif ($tokens[$i][0] == T_WHITESPACE && !$lastSpace) {
                 $stripStr .= ' ';
                 $lastSpace = true;
-            } else if (!($tokens[$i][0] == T_COMMENT || $tokens[$i][0] == T_DOC_COMMENT || $tokens[$i][0] == T_WHITESPACE)) {
+            } elseif (!($tokens[$i][0] == T_COMMENT || $tokens[$i][0] == T_DOC_COMMENT || $tokens[$i][0] == T_WHITESPACE)) {
                 $lastSpace = false;
                 $stripStr .= $tokens[$i][1];
             }

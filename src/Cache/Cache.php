@@ -105,7 +105,7 @@ class Cache
     {
         if ($lifetime == 0) {
             $lifetime = $this->getConfig('defaultLifetime');
-        } else if ($lifetime == -1) {
+        } elseif ($lifetime == -1) {
             $lifetime = 8640000000;
         }
         return $this->_store->set($this->getConfig('prefix') . $id, $value, $lifetime);

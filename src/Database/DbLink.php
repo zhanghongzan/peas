@@ -450,7 +450,7 @@ class DbLink
         if ($isGetTop0) {
             $selectResult = $this->_selectAndCatchException($sql, $isGetObject, $resultMap, $className, $classParam, $propertyMap);
             $result = $selectResult === false ? false : (isset($selectResult[0]) ? $selectResult[0] : null);
-        } else if ($this->_page !== false) {
+        } elseif ($this->_page !== false) {
             $numRows = $this->_getNumAndCatchException($sql);
             if ($numRows > 0 && $this->_pageSize * ($this->_page - 1) >= $numRows) {
                 $this->_page = ceil($numRows / $this->_pageSize);
@@ -700,11 +700,11 @@ class DbLink
 
             if ($realType == 'int' || $realType == 'integer') {
                 $replace[$str] = intval($realVal);
-            } else if ($realType == 'float' || $realType == 'double') {
+            } elseif ($realType == 'float' || $realType == 'double') {
                 $replace[$str] = floatval($realVal);
-            } else if ($realType == 'string') {
+            } elseif ($realType == 'string') {
                 $replace[$str] = '\'' . $link->escapeString($realVal) . '\'';
-            } else if ($realType == 'real') {
+            } elseif ($realType == 'real') {
                 $replace[$str] = $realVal;
             } else {
                 $replace[$str] = is_string($realVal) ? '\'' . $link->escapeString($realVal) . '\'' : $realVal;
