@@ -22,10 +22,7 @@ class Session
      */
     private static $_config = [
         'prefix' => 'pf_', // session名称前缀
-        'config' => [      // 配置参数，参数名=>参数值，参数名为php默认配置名，这里的设置将覆盖默认设置
-            'session.use_cookies'    => 1,
-            'session.gc_maxlifetime' => 1440,
-        ],
+        'config' => [],    // 配置参数，参数名=>参数值，参数名为php默认配置名，这里的设置将覆盖默认设置，如：['session.gc_maxlifetime' => 1440, ...]
     ];
 
 
