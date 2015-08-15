@@ -9,7 +9,7 @@ namespace Peas\Log;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class Log
+class LogCenter
 {
     /**
      * 日志读写类

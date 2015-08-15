@@ -50,7 +50,7 @@ class Cache
      *     'defaultStoreConfig' => [],    // 默认存储器参数，没有可不传<br>
      * ]
      */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         $this->setConfig($config);
         $this->setStore($this->getConfig('defaultStore'), $this->getConfig('defaultStoreConfig'));
