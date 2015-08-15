@@ -93,6 +93,18 @@ class Configure
     }
 
     /**
+     * 一次设置多个配置
+     *
+     * @param array $configArr
+     */
+    public static function setSeveral(array $configArr)
+    {
+        foreach ($configArr as $key => $value) {
+            self::set($key, $value);
+        }
+    }
+
+    /**
      * 清空所有配置
      *
      * @return void
