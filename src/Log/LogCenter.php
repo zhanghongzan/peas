@@ -29,6 +29,16 @@ class LogCenter
         self::$_logger = new Logger($config);
     }
 
+    /**
+     * 获取当前的日志读写类
+     *
+     * return Logger
+     */
+    public static function getLogger()
+    {
+        return self::$_logger;
+    }
+
 
     /**
      * 系统无法使用

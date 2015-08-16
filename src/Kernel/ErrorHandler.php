@@ -1,5 +1,5 @@
 <?php
-namespace Peas\Support;
+namespace Peas\Kernel;
 
 /**
  * Peas Framework
@@ -20,7 +20,7 @@ class ErrorHandler
 
 
     /**
-     * 日志写入类，设置了之后，未捕获的异常、调用printToLog方法、printTraceToLog方法可以将异常写入日志
+     * 日志写入类，设置了之后，可以将错误写入日志
      *
      * @var Psr\Log\LoggerInterface
      */
@@ -34,7 +34,7 @@ class ErrorHandler
 
 
     /**
-     * 设置日志写入类，设置了之后，未捕获的异常、调用printToLog方法、printTraceToLog方法可以将异常写入日志
+     * 设置日志写入类，设置了之后，可以将错误写入日志
      *
      * @param  Psr\Log\LoggerInterface $logger 日志写入类，需要实现Psr\Log\LoggerInterface接口
      * @return void
@@ -55,14 +55,14 @@ class ErrorHandler
     }
 
     /**
-     * 自定义错误处理，用于捕获异常
+     * 自定义错误处理，用于捕获错误
      *
      * @param  string $errno   错误报告级别
      * @param  string $errstr  出错信息
      * @param  string $errfile 出错所在文件
      * @param  int    $errline 出错所在行
      * @return void
-    */
+     */
     public static function handler($errno, $errstr, $errfile, $errline)
     {
         $errInfo = date("Y-m-d H:i:m") . ' Error['.$errno.']:' . $errstr . '[in ' . $errfile . ':' . $errline . ']';
@@ -72,7 +72,7 @@ class ErrorHandler
             self::$_logger->error($errInfo);
         }
         if (self::$_callback) {
-            self::$_callback($errno, $errstr, $errfile, $errline);
+            self::$_callback($errno, $errstr, $errfile, $errline, $errInfo);
         }
     }
 }
