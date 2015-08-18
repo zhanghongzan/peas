@@ -1,5 +1,5 @@
 <?php
-namespace Peas\Kernel;
+namespace Peas\Kernel\System;
 
 /**
  * Peas Framework

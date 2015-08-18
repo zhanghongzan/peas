@@ -1,6 +1,8 @@
 <?php
 namespace Peas\Kernel;
 
+use Peas\Kernel\System\Application;
+
 class Peas
 {
     /**
