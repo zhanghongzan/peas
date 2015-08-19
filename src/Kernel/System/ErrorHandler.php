@@ -73,6 +73,8 @@ class ErrorHandler
         }
         if (self::$_callback) {
             self::$_callback($errno, $errstr, $errfile, $errline, $errInfo);
+        } else if ($errno == E_ERROR || $errno == E_USER_ERROR) {
+            Application::to500($errInfo);
         }
     }
 }

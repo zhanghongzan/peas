@@ -4,6 +4,7 @@ namespace Peas\Kernel\System;
 use Peas\Config\Configure;
 use Peas\Http\Session;
 use Peas\Routing\Router;
+use Peas\View\CornTemplate;
 
 /**
  * Peas Framework
@@ -16,17 +17,19 @@ use Peas\Routing\Router;
 class Application
 {
     /**
+     * 模板引擎实例
+     *
+     * @var CornTemplate
+     */
+    private static $_templateInstance = NULL;
+
+
+    /**
      * 创建应用实例
      */
     public function __construct()
     {
-        if (_MODE == 'debug') {
-            Debug::begin(); // 标记起始调试点
-        }
-        $scriptDir = dirname($_SERVER['SCRIPT_NAME']);
-        define('_ROOT', $scriptDir == '/' || $scriptDir == "\\" ? '' : $scriptDir);
-
-        $runtimePath = self::getPath('storage') . '/framework/cache/~runtime.php';
+        $runtimePath = _PATH . '/storage/framework/cache/~runtime.php';
         (_MODE == 'work' && is_file($runtimePath)) ? require $runtimePath : Runtime::build();
     }
 
@@ -37,42 +40,29 @@ class Application
      */
     public function run()
     {
-        date_default_timezone_set(Configure::get('_default.timezone')); // 设置系统时区
-        set_error_handler(['Peas\Kernel\ErrorHandler', 'handler']);     // 设置错误处理
-        set_exception_handler(['Peas\Support\Exception', 'handler']);   // 设置异常处理
+        date_default_timezone_set(Configure::get('_default.timezone'));    // 设置系统时区
+        set_exception_handler(['Peas\Support\Exception', 'handler']);      // 设置异常处理
+        set_error_handler(['Peas\Kernel\System\ErrorHandler', 'handler']); // 设置错误处理
 
-        if (Configure::get('_session.autoStart')) {
-            Session::start();
-        }
-
-        self::_doRunUrl(Router::dispatch());
-
-        // 输出调试信息
-        if (_MODE == 'debug') {
-            Debug::end();
-        }
+        Configure::get('_session.autoStart') or Session::start();
+        self::_execute(Router::dispatch());
     }
 
     /**
      * 执行URL
      *
-     * @param  string  $url         要执行的URL
-     * @param  boolean $ifAppFilter 是否执行appFilter
-     * @param  boolean $ifFilter    是否执行actionFilter
-     * @param  array   $param       私有Get参数
+     * @param  string $url 要执行的URL
      * @return void
      */
-    private static function _doRunUrl($url, $ifAppFilter = TRUE, $ifFilter = TRUE, $param = array())
+    private static function _execute($url)
     {
-        $cache = FALSE;
-        if (_MODE == 'work') {
-            $cachePath = self::_getConfig('_runtime.buildDir') . '/~' . urlencode($url) . '.php';
-            if (is_file($cachePath)) {
-                $cache = include $cachePath;
-            }
+        $cache = false;
+        $cachePath = _PATH . '/storage/framework/cache/~' . urlencode($url) . '.php';
+        if (is_file($cachePath)) {
+            $cache = include $cachePath;
         }
 
-        if ($cache !== FALSE && !empty($cache)) {
+        if (!empty($cache)) {
             $urlInfo      = $cache['urlInfo'];
             $startFilters = $cache['filters'][0];
             $endFilters   = $cache['filters'][1];
@@ -164,79 +154,89 @@ class Application
         return $matchFilters;
     }
 
+
+
+
     /**
-     * 从URL表达式中解析出actionName和methodName
+     * 从URL表达式中解析出控制器类和方法信息
      *
      * @param  string $url URL表达式，格式：'[分组/模块/操作]
-     * @return array|boolean 如果指定类和方法存在返回array('类名', '方法名', TRUE), 不存在但是模板存在则返回array('类名', '方法名', FALSE), 都不存在返回FALSE
+     * @return array|boolean 如果指定类和方法存在返回['类名', '方法名', true], 不存在但是模板存在则返回['模板路径', '方法名', false], 都不存在返回false
      */
     private static function _getClassInfoFromUrl($url)
     {
-        $url  = trim($url, '/');
-        $arr0 = empty($url) ? array() : explode('/', $url);
+        $url = trim($url, '/');
+        $pieces = empty($url) ? [] : explode('/', $url);
 
-        $arr1 = $arr2 = array();
-        for ($i = 0, $size = count($arr0); $i < $size; $i ++) {
-            $ucVal = ucfirst($arr0[$i]);
-            array_push($arr1, $ucVal);
-            if ($i < $size - 1) {
-                array_push($arr2, $ucVal);
-            }
-        }
-        $arr3 = $arr1;
-        $arr4 = $arr2;
+        array_walk($pieces, function(&$value, $key) {
+            $value = ucfirst($value);
+        });
 
         $defaultClass  = 'Index';
         $defaultMethod = 'main';
 
         // 优先级1：***/***/***/index/main
-        array_push($arr1, $defaultClass);
-        $checkResult = self::_checkClassInfo(implode('_', $arr1), $defaultMethod);
-        if ($checkResult !== FALSE) {
+        $firstLevelArr = $pieces;
+        array_push($firstLevelArr, $defaultClass);
+        $checkResult = self::_checkClassInfo($firstLevelArr, $defaultMethod);
+        if ($checkResult !== false) {
             return $checkResult;
         }
 
         // 访问主页且主页不存在...
-        if (empty($arr0)) {
-            return FALSE;
+        if (empty($pieces)) {
+            return false;
         }
 
-        // 优先级2：***/***/Index/***
-        array_push($arr2, $defaultClass);
-        $checkResult = self::_checkClassInfo(implode('_', $arr2), $arr0[count($arr0) - 1]);
-        if ($checkResult !== FALSE) {
+        // 优先级2：***/***/***/main
+        $checkResult = self::_checkClassInfo($pieces, $defaultMethod);
+        if ($checkResult !== false) {
             return $checkResult;
         }
 
-        // 优先级3：***/***/***/main
-        $checkResult = self::_checkClassInfo(implode('_', $arr3), $defaultMethod);
-        if ($checkResult !== FALSE) {
-            return $checkResult;
-        }
-
-        // 优先级4：***/***/***
-        return (empty($arr4)) ? FALSE : self::_checkClassInfo(implode('_', $arr4), $arr0[count($arr0) - 1]);
+        // 优先级3：***/***/***
+        $methodName = array_pop($pieces);
+        return empty($pieces) ? false : self::_checkClassInfo($pieces, $methodName);
     }
 
     /**
-     * 检查指定的$className, $methodName是否存在
+     * 检查指定的类和方法是否存在
      *
-     * @param  string $className  类名
-     * @param  string $methodName 方法名
-     * @return array|boolean 如果指定类和方法存在返回array('类名', '方法名', TRUE), 不存在但是模板存在则返回array('类名', '方法名', FALSE), 都不存在返回false
+     * @param  array  $classPathArr 类路径
+     * @param  string $methodName   方法名
+     * @return array|boolean 如果指定类和方法存在返回['类名', '方法名', true], 不存在但是模板存在则返回['模板路径', '方法名', false], 都不存在返回false
      */
-    private static function _checkClassInfo($className, $methodName)
+    private static function _checkClassInfo(array $classPathArr, $methodName)
     {
-        if (method_exists(self::_getConfig('_default.actionPre') . $className, $methodName)) {
-            return array($className, $methodName, TRUE);
+        $classPath = 'App\\Controller\\' . implode('\\', $classPathArr) . 'Controller';
+        if (method_exists($classPath, $methodName)) {
+            return [$classPath, $methodName, true];
         }
-        $template = Peas_Action::getTemplateInstance();
-        if ($template != null && $template->templateExists(str_replace('_', '/', $className) . '.' . $methodName . '.php')) {
-            return array($className, $methodName, FALSE);
+        $template = self::getTemplateInstance();
+        $templatePath = implode('/', $classPath) . '.' . $methodName . '.php';
+        if ($template != null && $template->templateExists($templatePath)) {
+            return [$templatePath, $methodName, false];
         }
-        return FALSE;
+        return false;
     }
 
+
+    /**
+     * 获取模板引擎实例
+     *
+     * @return CornTemplate
+     */
+    public static function getTemplateInstance()
+    {
+        if (self::$_templateInstance !== null) {
+            return self::$_templateInstance;
+        }
+        $template = new CornTemplate(Configure::get('_template'));
+        if (defined('TEMPLATE_THEME')) {
+            $template->setTheme(TEMPLATE_THEME);
+        }
+        return self::$_templateInstance = $template;
+    }
 
     /**
      * 404
@@ -250,11 +250,11 @@ class Application
         if (!empty($app404Function)) {
             $app404Function($url);
         }
+        if (!headers_sent()) {
+            header("HTTP/1.0 404 Not Found");
+            header("Status: 404 Not Found");
+        }
         if (!empty(Configure::get('_404.page'))) {
-            if (!headers_sent()) {
-                header("HTTP/1.0 404 Not Found");
-                header("Status: 404 Not Found");
-            }
             include Configure::get('_404.page');
         }
         exit;
@@ -272,30 +272,13 @@ class Application
         if (!empty($app500Function)) {
             $app500Function($errInfo);
         }
+        if (!headers_sent()) {
+            header("HTTP/1.x 500 Internal Server Error");
+            header('Status: 500 Internal Server Error');
+        }
         if (!empty(Configure::get('_500.page'))) {
-            if (!headers_sent()) {
-                header("HTTP/1.x 500 Internal Server Error");
-                header('Status: 500 Internal Server Error');
-            }
             include Configure::get('_500.page');
         }
         exit;
-    }
-
-    /**
-     * 自定义错误处理，用于捕获异常
-     *
-     * @param  string $errno   错误报告级别
-     * @param  string $errstr  出错信息
-     * @param  string $errfile 出错所在文件
-     * @param  int    $errline 出错所在行
-     * @param  string $errInfo 已经格式化的错误信息
-     * @return void
-     */
-    public static function errorHandlerCallback($errno, $errstr, $errfile, $errline, $errInfo)
-    {
-        if ($errno == E_ERROR || $errno == E_USER_ERROR) {
-            self::to500($errInfo);
-        }
     }
 }

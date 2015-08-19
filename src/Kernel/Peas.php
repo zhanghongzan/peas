@@ -16,11 +16,13 @@ class Peas
     /**
      * 初始化
      *
-     * @param  string $basePath 系统根目录
+     * @param string $basePath 系统根目录
      */
     public function __construct($basePath = '')
     {
+        defined('_MODE') or define('_MODE', 'develop');
         define('_PATH', $basePath);
+        (_MODE == 'debug') or Debug::begin();
     }
 
     /**
@@ -32,5 +34,6 @@ class Peas
     {
         $application = new Application();
         $application->run();
+        (_MODE == 'debug') or Debug::end();
     }
 }
