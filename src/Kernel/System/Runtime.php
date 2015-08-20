@@ -151,4 +151,88 @@ class Runtime
         }
         return $code;
     }
+
+
+    /**
+     * 生成Action缓存
+     *
+     * @param  string $cachePath 缓存文件路径
+     * @return void
+     */
+    public static function buildAction($cachePath)
+    {
+        $cacheArray = [
+            'path'   => ActionContext::$path,
+            'action' => ActionContext::$action,
+            'method' => ActionContext::$method,
+            'view'   => ActionContext::$view,
+        ];
+        file_put_contents($cachePath, '<?php ' . 'return ' . var_export($cacheArray, true) . ";");
+    }
+
+    /**
+     * 从URL表达式匹配对应控制器
+     *
+     * @param  string $url URL表达式，格式：'[分组/模块/操作]
+     * @return boolean 如果指定类和方法存在返回['类名', '方法名', true], 不存在但是模板存在则返回['模板路径', '方法名', false], 都不存在返回false
+     */
+    public static function matchActionFromUrl($url)
+    {
+        $url = trim($url, '/');
+        $pieces = empty($url) ? [] : explode('/', $url);
+        array_walk($pieces, function(&$value, $key) {
+            $value = ucfirst($value);
+        });
+
+        // 优先级1：***/***/***/index/main
+        $firstLevelPieces   = $pieces;
+        $firstLevelPieces[] = 'Index';
+        if (self::_matchAction($firstLevelPieces, 'main')) {
+            return true;
+        }
+        // 访问主页且主页不存在...
+        if (empty($pieces)) {
+            return false;
+        }
+        // 优先级2：***/***/***/main
+        if (self::_matchAction($pieces, 'main')) {
+            return true;
+        }
+        // 优先级3：***/***/index/***
+        $method = array_pop($pieces);
+        $thirdLevelPieces   = $pieces;
+        $thirdLevelPieces[] = 'Index';
+        if (self::_matchAction($thirdLevelPieces, $method)) {
+            return true;
+        }
+        // 优先级4：***/***/***
+        return empty($pieces) ? false : self::_matchAction($pieces, lcfirst($method));
+    }
+
+    /**
+     * 匹配控制器，匹配成功时初始化会话信息
+     *
+     * @param  array   $classPath 控制器类路径
+     * @param  string  $method    方法名
+     * @return boolean 匹配成功返回true，匹配失败返回false
+     */
+    private static function _matchAction(array $classPath, $method)
+    {
+        $action = 'App\\Action\\' . implode('\\', $classPath) . 'Action';
+        array_walk($classPath, function(&$value, $key) {
+            $value = lcfirst($value);
+        });
+        $classPathStr = implode('/', $classPath);
+        $view = $classPathStr . '.' . $method . '.php';
+        if (method_exists($action, $method)) {
+            Application::initActionContext($classPathStr . '/' . $method, $action, $method, $view);
+            return true;
+        }
+        $template = Application::getTemplateInstance();
+        if ($template != null && $template->templateExists($view)) {
+            Application::initActionContext($classPathStr . '/' . $method, '', $method, $view);
+            return true;
+        }
+        return false;
+    }
 }

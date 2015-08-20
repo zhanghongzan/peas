@@ -63,161 +63,48 @@ class Application
         }
 
         if (!empty($cache)) {
-            $urlInfo      = $cache['urlInfo'];
-            $startFilters = $cache['filters'][0];
-            $endFilters   = $cache['filters'][1];
-            $actionName   = $cache['actionInfo'][0];
-            $extendPeas   = $cache['actionInfo'][1];
-        } else {
-            $urlInfo      = self::_getClassInfoFromUrl($url);
-            $startFilters = self::_getFilters('actionStart', $urlInfo[0], $urlInfo[1]);
-            $endFilters   = self::_getFilters('actionEnd',   $urlInfo[0], $urlInfo[1]);
-            $actionName   = $urlInfo[2] ? self::_getConfig('_default.actionPre') . $urlInfo[0] : 'Peas_Action';
-            $extendPeas   = ($actionName == 'Peas_Action' || is_subclass_of($actionName, 'Peas_Action')) ? TRUE : FALSE;
+            self::initActionContext($cache['path'], $cache['action'], $cache['method'], $cache['view']);
+        } elseif (!Runtime::matchActionFromUrl($url)) {
+            self::to404($url);
         }
 
-        if ($urlInfo === FALSE) {
-            Peas_Function::to404($url);
-            return;
-        }
-
-        if (!empty($param)) {
-            $_GET[$urlInfo[0] . '.' . $urlInfo[1]] = $param;
-        }
-        if ($ifAppFilter) {
-            self::_doFilters(self::_getConfig('_filter.appStart'), 'appStart', $url, $urlInfo);
-        }
-        if ($ifFilter) {
-            self::_doFilters($startFilters, 'actionStart', $url, $urlInfo);
-        }
-        $action = new $actionName();
-        if ($extendPeas) {
-            $action->_run($urlInfo[0], $urlInfo[1], $urlInfo[2]);
+        $action = ActionContext::$action;
+        if (empty($action)) {
+            $template = self::getTemplateInstance();
+            $template->assign($_POST);
+            $template->assign($_GET);
+            $template->display(ActionContext::$view);
         } else {
-            $methodName = $urlInfo[1];
-            $action->$methodName();
-        }
-        if ($ifFilter) {
-            self::_doFilters($startFilters, 'actionEnd', $url, $urlInfo);
-        }
-        if ($ifAppFilter) {
-            self::_doFilters(self::_getConfig('_filter.appEnd'), 'appEnd', $url, $urlInfo);
+            $method = ActionContext::$method;
+            $actionClass = new $action();
+            $actionClass->{$method}();
         }
 
         // 记录缓存数据
-        if (_MODE == 'work' && ($cache === FALSE || empty($cache))) {
-            Peas_System_Runtime::_buildAction($url, $urlInfo, array($startFilters, $endFilters), array($actionName, $extendPeas));
+        if (_MODE == 'work' && empty($cache)) {
+            Runtime::buildAction($url, $cachePath);
         }
     }
-
-    /**
-     * 执行过滤器
-     *
-     * @param array  $filters 要执行的过滤器
-     * @param string $type    过滤器类型
-     * @param string $url
-     * @param array  $urlInfo
-     */
-    private static function _doFilters($filters, $type, $url, $urlInfo)
-    {
-        if (!empty($filters)) {
-            foreach ($filters as $filterName) {
-                if (method_exists($filterName, $type)) {
-                    $filter = new $filterName();
-                    $filter->$type($url, $urlInfo);
-                }
-            }
-        }
-    }
-
-    /**
-     * 获取匹配的过滤器，仅获取不执行
-     *
-     * @param  string $type       过滤器类型
-     * @param  string $actionName 控制器名称
-     * @param  string $methodName 方法名
-     * @return array 所有匹配的过滤器名
-     */
-    private static function _getFilters($type, $actionName, $methodName = '')
-    {
-        $filters = self::_getConfig('_filter.' . $type);
-        if (empty($filters)) {
-            return array();
-        }
-        $nameStr = $actionName . ($methodName == '' ? '' : '_' . $methodName);
-        $matchFilters = array();
-        foreach ($filters as $filter => $pattern) {
-            if (($pattern[0] == 'exec' && preg_match($pattern[1], $nameStr)) || ($pattern[0] == 'jump' && !preg_match($pattern[1], $nameStr))) {
-                array_push($matchFilters, $filter);
-            }
-        }
-        return $matchFilters;
-    }
-
 
 
 
     /**
-     * 从URL表达式中解析出控制器类和方法信息
+     * 初始化会话信息
      *
-     * @param  string $url URL表达式，格式：'[分组/模块/操作]
-     * @return array|boolean 如果指定类和方法存在返回['类名', '方法名', true], 不存在但是模板存在则返回['模板路径', '方法名', false], 都不存在返回false
+     * @param  string $path       URL完整路径
+     * @param  string $action 控制器带包名的完整路径
+     * @param  string $method     方法名
+     * @param  string $view       默认匹配视图路径
+     * @return void
      */
-    private static function _getClassInfoFromUrl($url)
+    public static function initActionContext($path, $action, $method, $view)
     {
-        $url = trim($url, '/');
-        $pieces = empty($url) ? [] : explode('/', $url);
-
-        array_walk($pieces, function(&$value, $key) {
-            $value = ucfirst($value);
-        });
-
-        $defaultClass  = 'Index';
-        $defaultMethod = 'main';
-
-        // 优先级1：***/***/***/index/main
-        $firstLevelArr = $pieces;
-        array_push($firstLevelArr, $defaultClass);
-        $checkResult = self::_checkClassInfo($firstLevelArr, $defaultMethod);
-        if ($checkResult !== false) {
-            return $checkResult;
-        }
-
-        // 访问主页且主页不存在...
-        if (empty($pieces)) {
-            return false;
-        }
-
-        // 优先级2：***/***/***/main
-        $checkResult = self::_checkClassInfo($pieces, $defaultMethod);
-        if ($checkResult !== false) {
-            return $checkResult;
-        }
-
-        // 优先级3：***/***/***
-        $methodName = array_pop($pieces);
-        return empty($pieces) ? false : self::_checkClassInfo($pieces, $methodName);
-    }
-
-    /**
-     * 检查指定的类和方法是否存在
-     *
-     * @param  array  $classPathArr 类路径
-     * @param  string $methodName   方法名
-     * @return array|boolean 如果指定类和方法存在返回['类名', '方法名', true], 不存在但是模板存在则返回['模板路径', '方法名', false], 都不存在返回false
-     */
-    private static function _checkClassInfo(array $classPathArr, $methodName)
-    {
-        $classPath = 'App\\Controller\\' . implode('\\', $classPathArr) . 'Controller';
-        if (method_exists($classPath, $methodName)) {
-            return [$classPath, $methodName, true];
-        }
-        $template = self::getTemplateInstance();
-        $templatePath = implode('/', $classPath) . '.' . $methodName . '.php';
-        if ($template != null && $template->templateExists($templatePath)) {
-            return [$templatePath, $methodName, false];
-        }
-        return false;
+        ActionContext::$action   = $action;
+        ActionContext::$path     = $path;
+        ActionContext::$method   = $method;
+        ActionContext::$template = self::getTemplateInstance();
+        ActionContext::$view     = $view;
+        ActionContext::$cacheId  = substr(md5($_SERVER['REQUEST_URI']), 8, 16);
     }
 
 
