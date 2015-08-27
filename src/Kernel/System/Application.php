@@ -77,7 +77,9 @@ class Application
         } else {
             $method = ActionContext::$method;
             $actionClass = new $action();
-            $actionClass->{$method}();
+            if (!(method_exists($actionClass, 'peasInit') && $actionClass->peasInit())) {
+                $actionClass->{$method}();
+            }
         }
 
         // 记录缓存数据
@@ -91,10 +93,10 @@ class Application
     /**
      * 初始化会话信息
      *
-     * @param  string $path       URL完整路径
+     * @param  string $path   URL完整路径
      * @param  string $action 控制器带包名的完整路径
-     * @param  string $method     方法名
-     * @param  string $view       默认匹配视图路径
+     * @param  string $method 方法名
+     * @param  string $view   默认匹配视图路径
      * @return void
      */
     public static function initActionContext($path, $action, $method, $view)
