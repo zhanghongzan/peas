@@ -24,7 +24,7 @@ class Runtime
         define('_ROOT', $scriptDir == '/' || $scriptDir == "\\" ? '' : $scriptDir);
 
         // 初始化配置参数
-        Configure::setSeveral(self::_initConfig());
+        Configure::setSeveral(self::_getInitConfig());
 
         // 初始化系统组件
         $initCode = self::_getInitCode();
