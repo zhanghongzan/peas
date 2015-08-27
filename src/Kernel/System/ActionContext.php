@@ -25,7 +25,7 @@ class ActionContext
      *
      * @var string
      */
-    public static $action = '';
+    public static $controller = '';
 
     /**
      * 方法名

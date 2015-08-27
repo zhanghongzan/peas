@@ -63,22 +63,22 @@ class Application
         }
 
         if (!empty($cache)) {
-            self::initActionContext($cache['path'], $cache['action'], $cache['method'], $cache['view']);
+            self::initActionContext($cache['path'], $cache['controller'], $cache['method'], $cache['view']);
         } elseif (!Runtime::matchActionFromUrl($url)) {
             self::to404($url);
         }
 
-        $action = ActionContext::$action;
-        if (empty($action)) {
+        $controller = ActionContext::$controller;
+        if (empty($controller)) {
             $template = self::getTemplateInstance();
             $template->assign($_POST);
             $template->assign($_GET);
             $template->display(ActionContext::$view);
         } else {
             $method = ActionContext::$method;
-            $actionClass = new $action();
-            if (!(method_exists($actionClass, 'peasInit') && $actionClass->peasInit())) {
-                $actionClass->{$method}();
+            $controllerClass = new $controller();
+            if (!(method_exists($controllerClass, 'peasInit') && $controllerClass->peasInit())) {
+                $controllerClass->{$method}();
             }
         }
 
@@ -93,20 +93,20 @@ class Application
     /**
      * 初始化会话信息
      *
-     * @param  string $path   URL完整路径
-     * @param  string $action 控制器带包名的完整路径
-     * @param  string $method 方法名
-     * @param  string $view   默认匹配视图路径
+     * @param  string $path       URL完整路径
+     * @param  string $controller 控制器带包名的完整路径
+     * @param  string $method     方法名
+     * @param  string $view       默认匹配视图路径
      * @return void
      */
-    public static function initActionContext($path, $action, $method, $view)
+    public static function initActionContext($path, $controller, $method, $view)
     {
-        ActionContext::$action   = $action;
-        ActionContext::$path     = $path;
-        ActionContext::$method   = $method;
-        ActionContext::$template = self::getTemplateInstance();
-        ActionContext::$view     = $view;
-        ActionContext::$cacheId  = substr(md5($_SERVER['REQUEST_URI']), 8, 16);
+        ActionContext::$controller = $controller;
+        ActionContext::$path       = $path;
+        ActionContext::$method     = $method;
+        ActionContext::$template   = self::getTemplateInstance();
+        ActionContext::$view       = $view;
+        ActionContext::$cacheId    = substr(md5($_SERVER['REQUEST_URI']), 8, 16);
     }
 
 

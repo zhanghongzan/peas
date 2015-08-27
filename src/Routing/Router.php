@@ -82,7 +82,7 @@ class Router
     /**
      * 解析当前访问的URL
      *
-     * @return string 解析完成的字符串（不含参数的URL表达式），形式为 group/action/method，需做进一步处理才能得到action地址和method名
+     * @return string 解析完成的字符串（不含参数的URL表达式），形式为 group/controller/method，需做进一步处理才能得到controller地址和method名
      */
     public static function dispatch()
     {

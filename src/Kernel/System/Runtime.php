@@ -162,10 +162,10 @@ class Runtime
     public static function buildAction($cachePath)
     {
         $cacheArray = [
-            'path'   => ActionContext::$path,
-            'action' => ActionContext::$action,
-            'method' => ActionContext::$method,
-            'view'   => ActionContext::$view,
+            'path'       => ActionContext::$path,
+            'controller' => ActionContext::$controller,
+            'method'     => ActionContext::$method,
+            'view'       => ActionContext::$view,
         ];
         file_put_contents($cachePath, '<?php ' . 'return ' . var_export($cacheArray, true) . ";");
     }
@@ -218,14 +218,14 @@ class Runtime
      */
     private static function _matchAction(array $classPath, $method)
     {
-        $action = 'App\\Action\\' . implode('\\', $classPath) . 'Action';
+        $controller = 'App\\Controller\\' . implode('\\', $classPath) . 'Controller';
         array_walk($classPath, function(&$value, $key) {
             $value = lcfirst($value);
         });
         $classPathStr = implode('/', $classPath);
         $view = $classPathStr . '.' . $method . '.php';
-        if (method_exists($action, $method)) {
-            Application::initActionContext($classPathStr . '/' . $method, $action, $method, $view);
+        if (method_exists($controller, $method)) {
+            Application::initActionContext($classPathStr . '/' . $method, $controller, $method, $view);
             return true;
         }
         $template = Application::getTemplateInstance();
