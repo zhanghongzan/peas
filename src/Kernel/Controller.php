@@ -13,7 +13,7 @@ use Peas\Config\Configure;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class Action
+class Controller
 {
     /**
      * 模板引擎实例
