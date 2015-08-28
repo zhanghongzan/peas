@@ -406,6 +406,16 @@ class DbLink
         return $this->_cache;
     }
 
+    /**
+     * 设置缓存引擎
+     *
+     * @param Peas\Cache\Cache $cache
+     */
+    public function setCacheInstance($cache)
+    {
+        $this->_cache = $cache;
+    }
+
 
 
     /**

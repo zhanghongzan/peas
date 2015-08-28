@@ -22,11 +22,13 @@ class Db
     /**
      * 初始化连接
      *
-     * @param array $config 配置参数
+     * @param array            $config        配置参数
+     * @param Peas\Cache\Cache $cacheInstance 缓存引擎实例
      */
-    public static function init(array $config)
+    public static function init(array $config, $cacheInstance = null)
     {
         self::$_dbLink = new DbLink($config);
+        self::$_dbLink->setCacheInstance($cacheInstance);
     }
 
     /**

@@ -93,6 +93,7 @@ class Runtime
         $code .= self::_getBasicComponentCode();
         $code .= self::_getErrorInitCode();
         $code .= self::_getExceptionInitCode();
+        $code .= self::_getDbInitCode();
         return $code;
     }
 
@@ -150,6 +151,22 @@ class Runtime
             $code .= '\Peas\Kernel\System\ErrorHandler::setCallback(Peas\Config\Configure::get(\'_error.callback\'));';
         }
         return $code;
+    }
+
+    /**
+     * 数据库连接初始化代码
+     *
+     * @return string
+     */
+    private static function _getDbInitCode()
+    {
+        if (!Configure::get('_link_0')) {
+            return '';
+        }
+        if (empty(Configure::get('_link_0.cache.0'))) {
+            return 'Peas\Database\Db::init(Peas\Config\Configure::get(\'_link_0\'));';
+        }
+        return 'Peas\Database\Db::init(Peas\Config\Configure::get(\'_link_0\'), new Cache(Peas\Config\Configure::get(\'_link_0.cache.1\')));';
     }
 
 
