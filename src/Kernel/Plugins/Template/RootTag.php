@@ -1,5 +1,5 @@
 <?php
-namespace Peas\Kernel\Plugin\Template;
+namespace Peas\Kernel\Plugins\Template;
 
 /**
  * Peas Framework

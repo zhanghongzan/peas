@@ -81,7 +81,7 @@ class Runtime
         if (empty($setting['_template.compilerConfig.pluginPackage'])) {
             $setting['_template.compilerConfig.pluginPackage'] = [];
         }
-        $setting['_template.compilerConfig.pluginPackage'][] = 'Peas\Kernel\Plugin\Template'; // 系统标签扩展包路径
+        $setting['_template.compilerConfig.pluginPackage'][] = 'Peas\Kernel\Plugins\Template'; // 系统标签扩展包路径
         return $setting;
     }
 
