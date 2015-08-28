@@ -133,6 +133,13 @@ class Compiler
      */
     public $stripSpace = true;
 
+    /**
+     * 扩展包名，支持多个，但是单个也要以数组形式配置
+     *
+     * @var array
+     */
+    public $pluginPackage = [];
+
 
     /**
      * 当前运行的CornTemplate实例
@@ -369,8 +376,11 @@ class Compiler
     private function _loadPlugin($pluginName)
     {
         $pluginName = ucfirst($pluginName);
-        if (class_exists($pluginName, false)) {
-            return new $pluginName();
+        foreach ($this->pluginPackage as $item) {
+            $pluginClassName = $item . '\\' . $pluginName;
+            if (class_exists($pluginClassName, true)) {
+                return new $pluginClassName();
+            }
         }
         return false;
     }

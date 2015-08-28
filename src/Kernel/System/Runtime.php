@@ -77,6 +77,11 @@ class Runtime
         if (!empty($setting['_config.route']) && is_file($setting['_config.route'])) {
             $setting['_url.rules'] = include $setting['_config.route'];
         }
+        // 添加系统配置
+        if (empty($setting['_template.compilerConfig.pluginPackage'])) {
+            $setting['_template.compilerConfig.pluginPackage'] = [];
+        }
+        $setting['_template.compilerConfig.pluginPackage'][] = 'Peas\Kernel\Plugin\Template'; // 系统标签扩展包路径
         return $setting;
     }
 
