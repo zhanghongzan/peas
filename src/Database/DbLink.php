@@ -576,7 +576,8 @@ class DbLink
     /**
      * 获取数据库ID
      *
-     * @param mixed $config 分布式数据库配置，如：[[数据库ID, 权重百分比], ...]，权重为1~100的整数，表示百分之几
+     * @param  mixed  $config 分布式数据库配置，如：[[数据库ID, 权重百分比], ...]，权重为1~100的整数，表示百分之几
+     * @return string 数据库连接ID
      */
     private static function _getDbid($config)
     {
