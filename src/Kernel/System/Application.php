@@ -44,7 +44,7 @@ class Application
         set_exception_handler(['Peas\Support\Exception', 'handler']);      // 设置异常处理
         set_error_handler(['Peas\Kernel\System\ErrorHandler', 'handler']); // 设置错误处理
 
-        Configure::get('_session.autoStart') or Session::start();
+        (!Configure::get('_session.autoStart')) or Session::start();
         self::_execute(Router::dispatch());
     }
 

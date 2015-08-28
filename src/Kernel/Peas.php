@@ -22,7 +22,7 @@ class Peas
     {
         defined('_MODE') or define('_MODE', 'develop');
         define('_PATH', $basePath);
-        (_MODE == 'debug') or Debug::begin();
+        (_MODE != 'debug') or Debug::begin();
     }
 
     /**
@@ -34,6 +34,6 @@ class Peas
     {
         $application = new Application();
         $application->run();
-        (_MODE == 'debug') or Debug::end();
+        (_MODE != 'debug') or Debug::end();
     }
 }

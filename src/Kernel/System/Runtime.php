@@ -31,7 +31,7 @@ class Runtime
         eval($initCode);
 
         // 生产环境生成缓存文件
-        (_MODE == 'work') or self::_createRuntimeFile($initCode);
+        (_MODE != 'work') or self::_createRuntimeFile($initCode);
     }
 
     /**
@@ -41,9 +41,9 @@ class Runtime
      */
     private static function _createRuntimeFile($initCode = '')
     {
-        $fullCode  = '<?php define(\'_ROOT\', ' . _ROOT . ');';
-        $fullCode .= 'Configure::set(null, ' . var_export(Configure::get(), true) . ');' . $initCode;
-        file_put_contents(_PATH . '/storage/framework/cache/~runtime.php', $fullCode);
+        $fullCode  = '<?php define(\'_ROOT\', \'' . _ROOT . '\');';
+        $fullCode .= 'Peas\Config\Configure::set(null, ' . var_export(Configure::get(), true) . ');' . $initCode;
+        file_put_contents(_PATH . '/storage/framework/cache/~runtime.php', self::_stripWhiteSpace($fullCode));
     }
 
     /**
@@ -89,7 +89,7 @@ class Runtime
     private static function _getInitCode()
     {
         $code  = 'define(\'_RUNTIME_VERSION\', ' . (_MODE == 'work' ? mt_rand(10001, 99999) : 0) . ');';
-        $code .= 'define(\'_STATIC\', ' . (empty(Configure::get('_default.static')) ? _ROOT : Configure::get('_default.static')) . ');';
+        $code .= 'define(\'_STATIC\', \'' . (empty(Configure::get('_default.static')) ? _ROOT : Configure::get('_default.static')) . '\');';
         $code .= self::_getBasicComponentCode();
         $code .= self::_getErrorInitCode();
         $code .= self::_getExceptionInitCode();
@@ -106,16 +106,16 @@ class Runtime
     {
         $code = '';
         if (!empty(Configure::get('_url'))) {
-            $code .= '\Peas\Routing\Router::setConfig(Configure::get(\'_url\'));';
+            $code .= '\Peas\Routing\Router::setConfig(Peas\Config\Configure::get(\'_url\'));';
         }
         if (!empty(Configure::get('_cookie'))) {
-            $code .= '\Peas\Http\Cookie::setConfig(Configure::get(\'_cookie\'));';
+            $code .= '\Peas\Http\Cookie::setConfig(Peas\Config\Configure::get(\'_cookie\'));';
         }
         if (!empty(Configure::get('_session'))) {
-            $code .= '\Peas\Http\Session::setConfig(Configure::get(\'_session\'));';
+            $code .= '\Peas\Http\Session::setConfig(Peas\Config\Configure::get(\'_session\'));';
         }
-        $code .= '\Peas\Cache\CacheCenter::init(Configure::get(\'_cache\'));';
-        $code .= '\Peas\Log\LogCenter::init(Configure::get(\'_log\'));';
+        $code .= '\Peas\Cache\CacheCenter::init(Peas\Config\Configure::get(\'_cache\'));';
+        $code .= '\Peas\Log\LogCenter::init(Peas\Config\Configure::get(\'_log\'));';
         return $code;
     }
 
@@ -128,7 +128,7 @@ class Runtime
     {
         $code = '';
         if (Configure::get('_exception.log.open')) {
-            $exceptionLog = empty(Configure::get('_exception.log.loggers')) ? '\Peas\Log\LogCenter::getLogger()' : 'new \Peas\Log\Logger(Configure::get(\'_exception.log\'))';
+            $exceptionLog = empty(Configure::get('_exception.log.loggers')) ? '\Peas\Log\LogCenter::getLogger()' : 'new \Peas\Log\Logger(Peas\Config\Configure::get(\'_exception.log\'))';
             $code = '\Peas\Support\Exception::setLogger(' . $exceptionLog . ');';
         }
         return $code;
@@ -143,11 +143,11 @@ class Runtime
     {
         $code = '';
         if (Configure::get('_error.log.open')) {
-            $errorLog = empty(Configure::get('_error.log.loggers')) ? '\Peas\Log\LogCenter::getLogger()' : 'new \Peas\Log\Logger(Configure::get(\'_error.log\'))';
+            $errorLog = empty(Configure::get('_error.log.loggers')) ? '\Peas\Log\LogCenter::getLogger()' : 'new \Peas\Log\Logger(Peas\Config\Configure::get(\'_error.log\'))';
             $code .= '\Peas\Kernel\System\ErrorHandler::setLogger(' . $errorLog . ');';
         }
         if (Configure::get('_error.callback')) {
-            $code .= '\Peas\Kernel\System\ErrorHandler::setCallback(Configure::get(\'_error.callback\'));';
+            $code .= '\Peas\Kernel\System\ErrorHandler::setCallback(Peas\Config\Configure::get(\'_error.callback\'));';
         }
         return $code;
     }
@@ -167,7 +167,7 @@ class Runtime
             'method'     => ActionContext::$method,
             'view'       => ActionContext::$view,
         ];
-        file_put_contents($cachePath, '<?php ' . 'return ' . var_export($cacheArray, true) . ";");
+        file_put_contents($cachePath, self::_stripWhiteSpace('<?php ' . 'return ' . var_export($cacheArray, true) . ";"));
     }
 
     /**
@@ -234,5 +234,32 @@ class Runtime
             return true;
         }
         return false;
+    }
+
+
+    /**
+     * 去除代码中的空白和注释
+     *
+     * @param  string $content 需要处理的代码
+     * @return string 处理后的代码
+     */
+    private static function _stripWhiteSpace($content)
+    {
+        $stripStr  = '';
+        $tokens    = token_get_all($content);
+        $lastSpace = FALSE;
+        for ($i = 0, $j = count($tokens); $i < $j; $i ++) {
+            if (is_string($tokens[$i])) {
+                $lastSpace = TRUE;
+                $stripStr  = rtrim($stripStr) . $tokens[$i];
+            } else if ($tokens[$i][0] == T_WHITESPACE && !$lastSpace) {
+                $stripStr .= ' ';
+                $lastSpace = TRUE;
+            } else if (!($tokens[$i][0] == T_COMMENT || $tokens[$i][0] == T_DOC_COMMENT || $tokens[$i][0] == T_WHITESPACE)) {
+                $lastSpace = FALSE;
+                $stripStr .= $tokens[$i][1];
+            }
+        }
+        return $stripStr;
     }
 }
