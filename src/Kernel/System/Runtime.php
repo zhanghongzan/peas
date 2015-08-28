@@ -202,7 +202,7 @@ class Runtime
         $method = array_pop($pieces);
         $thirdLevelPieces   = $pieces;
         $thirdLevelPieces[] = 'Index';
-        if (self::_matchAction($thirdLevelPieces, $method)) {
+        if (self::_matchAction($thirdLevelPieces, lcfirst($method))) {
             return true;
         }
         // 优先级4：***/***/***
