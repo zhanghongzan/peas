@@ -124,7 +124,7 @@ class Exception extends \Exception
     public static function printToLog(\Exception $e)
     {
         if (self::$_logger) {
-            self::$_logger->warning(self::toString($e));
+            self::$_logger->error(self::toString($e));
         }
     }
 }
