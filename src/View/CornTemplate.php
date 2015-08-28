@@ -119,7 +119,8 @@ class CornTemplate
     {
         if (!empty($config)) {
             foreach ($config as $key => $val) {
-                $this->_{$key} = $val;
+                $keyStr = '_' . $key;
+                $this->{$keyStr} = $val;
             }
         }
     }
