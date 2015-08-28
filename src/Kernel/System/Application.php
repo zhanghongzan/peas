@@ -123,6 +123,8 @@ class Application
         $template = new CornTemplate(Configure::get('_template'));
         if (defined('TEMPLATE_THEME')) {
             $template->setTheme(TEMPLATE_THEME);
+            $template->assign('root', _ROOT);
+            $template->assign('static', _STATIC);
         }
         return self::$_templateInstance = $template;
     }
