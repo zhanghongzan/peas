@@ -1,0 +1,10 @@
+
+生成密钥：
+openssl genrsa -out private.key 1024
+
+提取公钥：
+openssl rsa -in private.key -pubout -out public.key
+
+输出公钥的modulus、components
+openssl pkey -pubin -in public.key -text -noout
+
