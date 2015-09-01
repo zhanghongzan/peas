@@ -143,7 +143,9 @@ class Application
             header("HTTP/1.0 404 Not Found");
             header("Status: 404 Not Found");
         }
-        if (!empty(Configure::get('_404.page'))) {
+        if (empty(Configure::get('_404.page'))) {
+            echo '404';
+        } else {
             include Configure::get('_404.page');
         }
         exit;
@@ -165,7 +167,9 @@ class Application
             header("HTTP/1.x 500 Internal Server Error");
             header('Status: 500 Internal Server Error');
         }
-        if (!empty(Configure::get('_500.page'))) {
+        if (empty(Configure::get('_500.page'))) {
+            echo '500';
+        } else {
             include Configure::get('_500.page');
         }
         exit;
