@@ -1,3 +1,6 @@
+<?php
+    use Peas\Kernel\Peas;
+?>
 <!DOCTYPE HTML>
 <html>
 <head>

@@ -80,36 +80,36 @@
         <table>
             <tr>
                 <td width="33%"><?php $exceptions = isset($exceptions) ? $exceptions : array(); $errors = isset($errors) ? $errors : array(); ?>
-                    <a href="javascript:;" onclick="debugShowAll();" class="<?php echo count($exceptions) + count($errors) > 0 ? 'red' : 'green'; ?>">查看全部</a>
+                    <a href="javascript:;" onclick="debugShowAll();" <?php echo count($exceptions) + count($errors) > 0 ? 'class="red"' : 'class="green"'; ?>>查看全部</a>
                 </td>
                 <td width="33%">
-                    <a href="javascript:;" onclick="debugShowDetail(2, <?php echo count($exceptions) + count($errors);?>);" class="line2 <?php echo count($exceptions) + count($errors) > 0 ? 'orange' : 'darkGreen'; ?>">错误（<?php echo count($errors); ?>）<br />异常（<?php echo count($exceptions); ?>）</a>
+                    <a href="javascript:;" onclick="debugShowDetail(2, <?php echo count($exceptions) + count($errors);?>);" <?php echo count($exceptions) + count($errors) > 0 ? 'class="line2 orange"' : 'class="line2 darkGreen"'; ?>>错误（<?php echo count($errors); ?>）<br />异常（<?php echo count($exceptions); ?>）</a>
                 </td>
                 <td width="33%"><?php $dbQueryNum = isset($dbQueryNum) ? $dbQueryNum : 0; $dbWriteNum = isset($dbWriteNum) ? $dbWriteNum : 0;?>
-                    <a href="javascript:;" onclick="debugShowDetail(3, <?php echo $dbQueryNum + $dbWriteNum;?>);" class="<?php echo $dbQueryNum + $dbWriteNum > 0 ? 'blue' : 'blue1'; ?> line3">SQL<br />读取：<?php echo $dbQueryNum; ?><br />写入：<?php echo $dbWriteNum; ?></a>
+                    <a href="javascript:;" onclick="debugShowDetail(3, <?php echo $dbQueryNum + $dbWriteNum;?>);" <?php echo $dbQueryNum + $dbWriteNum > 0 ? 'class="blue line3"' : 'class="blue1 line3"'; ?>>SQL<br />读取：<?php echo $dbQueryNum; ?><br />写入：<?php echo $dbWriteNum; ?></a>
                 </td>
             </tr>
             <tr>
                 <td><?php $debugMark = isset($debugMark) ? $debugMark : array();$allTimeUsed = isset($allTimeUsed) ? $allTimeUsed : 0; $allMemUsed = isset($allMemUsed) ? $allMemUsed : 0; ?>
-                    <a href="javascript:;" onclick="debugShowDetail(4, <?php echo count($debugMark); ?>);" class="gray line3">调试点（<?php echo count($debugMark); ?>）<br />耗时：<?php echo $allTimeUsed;?>s<br />占用内存：<?php echo $allMemUsed;?>KB</a>
+                    <a href="javascript:;" onclick="debugShowDetail(4, <?php echo count($debugMark); ?>);" <?php echo 'class="gray line3"'; ?>>调试点（<?php echo count($debugMark); ?>）<br />耗时：<?php echo $allTimeUsed;?>s<br />占用内存：<?php echo $allMemUsed;?>KB</a>
                 </td>
                 <td><?php $varsNum = isset($varsNum) ? $varsNum : 0;?>
-                    <a href="javascript:;" onclick="debugShowDetail(5, <?php echo $varsNum; ?>);" class="<?php echo $varsNum > 0 ? 'purple' : 'purple1'; ?>">模板变量（<?php echo $varsNum; ?>）</a>
+                    <a href="javascript:;" onclick="debugShowDetail(5, <?php echo $varsNum; ?>);" <?php echo $varsNum > 0 ? 'class="purple"' : 'class="purple1"'; ?>>模板变量（<?php echo $varsNum; ?>）</a>
                 </td>
                 <td><?php $allLoad = isset($allLoad) ? $allLoad : array();?>
-                    <a href="javascript:;" onclick="debugShowDetail(6, <?php echo count($allLoad); ?>);" class="yellow">加载文件（<?php echo count($allLoad); ?>）</a>
+                    <a href="javascript:;" onclick="debugShowDetail(6, <?php echo count($allLoad); ?>);" <?php echo 'class="yellow"'; ?>>加载文件（<?php echo count($allLoad); ?>）</a>
                 </td>
             </tr>
         </table>
     </div>
 
     <div id="debug-toolbar">
-        <a href="javascript:;" onclick="debugShowIndex();" class="back">返回</a>
-        <a href="javascript:;" onclick="debugShowAll();" class="all">查看全部</a>
+        <a href="javascript:;" onclick="debugShowIndex();" <?php echo 'class="back"'; ?>>返回</a>
+        <a href="javascript:;" onclick="debugShowAll();" <?php echo 'class="all"'; ?>>查看全部</a>
     </div>
     <?php if (count($errors) > 0 || count($exceptions) > 0) : ?>
     <div id="debug-2">
-        <?php if (count($errors) > 0) : ?><table class="table">
+        <?php if (count($errors) > 0) : ?><table <?php echo 'class="table"'; ?>>
             <thead>
                 <tr>
                     <th colspan="2">错误（<?php echo count($errors); ?>）</th>
@@ -121,12 +121,12 @@
                     <th width="90%">内容</th>
                 </tr>
                 <?php foreach ($errors as $id => $err):?><tr>
-                    <td class="t1"><?php echo $id; ?></td>
-                    <td class="t2"><?php echo $err; ?></td>
+                    <td <?php echo 'class="t1"'; ?>><?php echo $id; ?></td>
+                    <td <?php echo 'class="t2"'; ?>><?php echo $err; ?></td>
                 </tr><?php endforeach;?>
             </tbody>
         </table><?php endif;?><?php if (count($exceptions) > 0) : ?>
-        <table class="table" <?php if (count($errors) > 0) : ?>style="margin-top:30px;"<?php endif;?>>
+        <table <?php echo 'class="table"'; ?> <?php if (count($errors) > 0) : ?>style="margin-top:30px;"<?php endif;?>>
             <thead>
                 <tr>
                     <th colspan="2">异常（<?php echo count($exceptions); ?>）</th>
@@ -138,15 +138,15 @@
                     <th width="90%">内容</th>
                 </tr>
                 <?php foreach ($exceptions as $id => $except):?><tr>
-                    <td class="t1"><?php echo $id;?></td>
-                    <td class="t2"><?php echo $except;?></td>
+                    <td <?php echo 'class="t1"'; ?>><?php echo $id;?></td>
+                    <td <?php echo 'class="t2"'; ?>><?php echo $except;?></td>
                 </tr><?php endforeach;?>
             </tbody>
         </table><?php endif;?>
     </div>
     <?php endif;?><?php if ($dbQueryNum + $dbWriteNum > 0) : ?>
     <div id="debug-3">
-        <table class="table">
+        <table <?php echo 'class="table"'; ?>>
             <thead>
                 <tr>
                     <th colspan="3">SQL（读取：<?php echo $dbQueryNum; ?>，写入：<?php echo $dbWriteNum; ?>）</th>
@@ -159,16 +159,16 @@
                     <th width="65%">SQL</th>
                 </tr><?php $sqls = isset($sqls) ? $sqls : array(); foreach ($sqls as $id => $sql):?>
                 <tr>
-                    <td class="t1"><?php echo $id;?></td>
-                    <td class="t2 <?php echo $sql[1] > 0.5 ? 'dark' : '';?>"><?php echo $sql[1];?></td>
-                    <td class="t2"><?php echo $sql[0];?></td>
+                    <td <?php echo 'class="t1"'; ?>><?php echo $id;?></td>
+                    <td <?php echo $sql[1] > 0.5 ? 'class="t2 dark"' : 'class="t2"';?>><?php echo $sql[1];?></td>
+                    <td <?php echo 'class="t2"'; ?>><?php echo $sql[0];?></td>
                 </tr><?php endforeach;?>
             </tbody>
         </table>
     </div><?php endif;?>
 
     <div id="debug-4">
-        <table class="table">
+        <table <?php echo 'class="table"'; ?>>
             <thead>
                 <tr>
                     <th colspan="4">总耗时：<?php echo $allTimeUsed;?>s&nbsp;&nbsp;&nbsp;占用内存：<?php echo $allMemUsed;?>KB&nbsp;&nbsp;</th>
@@ -187,18 +187,18 @@
                         $mark['mark'] = '结束';
                     }?>
                 <tr>
-                    <td class="t1"><?php echo $mark['mark'];?></td>
-                    <td class="t2"><?php echo $mark['timeUsed'];?></td>
-                    <td class="t2"><?php echo $mark['memUsed'];?></td>
-                    <td class="t2"><?php echo $mark['peakUsed'];?></td>
+                    <td <?php echo 'class="t1"'; ?>><?php echo $mark['mark'];?></td>
+                    <td <?php echo 'class="t2"'; ?>><?php echo $mark['timeUsed'];?></td>
+                    <td <?php echo 'class="t2"'; ?>><?php echo $mark['memUsed'];?></td>
+                    <td <?php echo 'class="t2"'; ?>><?php echo $mark['peakUsed'];?></td>
                 </tr><?php endforeach;?>
             </tbody>
         </table>
-        <div class="peas-notice">注：以上值均为与上一标记的区间值</div>
+        <div <?php echo 'class="peas-notice"'; ?>>注：以上值均为与上一标记的区间值</div>
     </div>
 
     <?php if ($varsNum > 0) : ?><div id="debug-5">
-        <table class="table">
+        <table <?php echo 'class="table"'; ?>>
             <thead>
                 <tr>
                     <th colspan="3">模板变量</th>
@@ -209,18 +209,18 @@
                     <th width="10%">&nbsp;</th>
                     <th width="15%">变量名</th>
                     <th width="75%">值</th>
-                </tr><?php $j = 0; foreach ($vars as $key => $val): $j++;?>
+                </tr><?php $j = 0; $vars = isset($vars) ? $vars : []; foreach ($vars as $key => $val): $j++;?>
                 <tr>
-                    <td class="t1"><?php echo $j;?></td>
-                    <td class="t2">$<?php echo $key;?></td>
-                    <td class="t2"><?php echo Peas\Kernel\Debug::showArrayToHtml($val);?></td>
+                    <td <?php echo 'class="t1"'; ?>><?php echo $j;?></td>
+                    <td <?php echo 'class="t2"'; ?>>$<?php echo $key;?></td>
+                    <td <?php echo 'class="t2"'; ?>><?php echo Peas\Kernel\Debug::showArrayToHtml($val);?></td>
                 </tr><?php endforeach;?>
             </tbody>
         </table>
     </div><?php endif;?>
 
     <div id="debug-6">
-        <table class="table">
+        <table <?php echo 'class="table"'; ?>>
             <thead>
                 <tr>
                     <th colspan="2">加载文件（<?php echo count($allLoad); ?>）</th>
@@ -232,8 +232,8 @@
                     <th width="90%">文件路径</th>
                 </tr><?php foreach ($allLoad as $id => $file):?>
                 <tr>
-                    <td class="t1"><?php echo $id + 1;?></td>
-                    <td class="t2"><?php echo $file;?></td>
+                    <td <?php echo 'class="t1"'; ?>><?php echo $id + 1;?></td>
+                    <td <?php echo 'class="t2"'; ?>><?php echo $file;?></td>
                 </tr><?php endforeach;?>
             </tbody>
         </table>
