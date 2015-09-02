@@ -40,9 +40,9 @@ class Application
      */
     public function run()
     {
-        date_default_timezone_set(Configure::get('_default.timezone'));    // 设置系统时区
-        set_exception_handler(['Peas\Support\Exception', 'handler']);      // 设置异常处理
-        set_error_handler(['Peas\Kernel\System\ErrorHandler', 'handler']); // 设置错误处理
+        date_default_timezone_set(Configure::get('_default.timezone'));                   // 设置系统时区
+        set_exception_handler(['\Peas\Kernel\System\SystemHandler', 'exceptionHandler']); // 设置异常处理
+        set_error_handler(['\Peas\Kernel\System\SystemHandler', 'errorHandler']);         // 设置错误处理
 
         (!Configure::get('_session.autoStart')) or Session::start();
         self::_execute(Router::dispatch());
@@ -130,7 +130,7 @@ class Application
     /**
      * 404
      *
-     * @param  $url 错误访问的url
+     * @param  string $url 错误访问的url
      * @return void
      */
     public static function to404($url = '')
@@ -154,7 +154,7 @@ class Application
     /**
      * 500
      *
-     * @param  $errInfo 错误信息
+     * @param  string $errInfo 错误信息
      * @return void
      */
     public static function to500($errInfo = '')

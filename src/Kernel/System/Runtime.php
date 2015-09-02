@@ -96,8 +96,6 @@ class Runtime
         $code  = 'define(\'_RUNTIME_VERSION\', ' . (_MODE == 'work' ? mt_rand(10001, 99999) : 0) . ');';
         $code .= 'define(\'_STATIC\', \'' . (empty(Configure::get('_default.static')) ? _ROOT : Configure::get('_default.static')) . '\');';
         $code .= self::_getBasicComponentCode();
-        $code .= self::_getErrorInitCode();
-        $code .= self::_getExceptionInitCode();
         $code .= self::_getDbInitCode();
         return $code;
     }
@@ -122,39 +120,7 @@ class Runtime
         }
         $code .= '\Peas\Cache\CacheCenter::init(Peas\Config\Configure::get(\'_cache\'));';
         $code .= '\Peas\Log\LogCenter::init(Peas\Config\Configure::get(\'_log\'));';
-        return $code;
-    }
-
-    /**
-     * 异常处理初始化代码
-     *
-     * @return string
-     */
-    private static function _getExceptionInitCode()
-    {
-        $code = '';
-        if (Configure::get('_exception.log.open')) {
-            $exceptionLog = empty(Configure::get('_exception.log.loggers')) ? '\Peas\Log\LogCenter::getLogger()' : 'new \Peas\Log\Logger(Peas\Config\Configure::get(\'_exception.log\'))';
-            $code = '\Peas\Support\Exception::setLogger(' . $exceptionLog . ');';
-        }
-        return $code;
-    }
-
-    /**
-     * 错误处理初始化代码
-     *
-     * @return string
-     */
-    private static function _getErrorInitCode()
-    {
-        $code = '';
-        if (Configure::get('_error.log.open')) {
-            $errorLog = empty(Configure::get('_error.log.loggers')) ? '\Peas\Log\LogCenter::getLogger()' : 'new \Peas\Log\Logger(Peas\Config\Configure::get(\'_error.log\'))';
-            $code .= '\Peas\Kernel\System\ErrorHandler::setLogger(' . $errorLog . ');';
-        }
-        if (Configure::get('_error.callback')) {
-            $code .= '\Peas\Kernel\System\ErrorHandler::setCallback(Peas\Config\Configure::get(\'_error.callback\'));';
-        }
+        $code .= '\Peas\Kernel\System\SystemHandler::init();';
         return $code;
     }
 

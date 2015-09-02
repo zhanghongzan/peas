@@ -2,10 +2,9 @@
 namespace Peas\Kernel;
 
 use Peas\Config\Configure;
-use Peas\Kernel\System\ErrorHandler;
-use Peas\Support\Exception;
 use Peas\Database\DbDebug;
 use Peas\Kernel\System\Application;
+use Peas\Kernel\System\SystemHandler;
 
 /**
  * Peas Framework
@@ -49,10 +48,15 @@ class Debug
         self::$_marker['peak'][$name] = function_exists('memory_get_peak_usage') ? memory_get_peak_usage() : self::$_marker['mem'][$name];
     }
 
+    /**
+     * 输出调试信息
+     *
+     * @return void
+     */
     public static function show()
     {
-        $errors = ErrorHandler::$errors;
-        $exceptions = Exception::$exceptions;
+        $errors = SystemHandler::$errors;
+        $exceptions = SystemHandler::$exceptions;
 
         $sqls = DbDebug::$sqls;
         $dbQueryNum = DbDebug::$queryNum;
@@ -85,8 +89,15 @@ class Debug
         // 所有加载的文件
         $allLoad = get_included_files();
 
-        $openWindow = Configure::get('_debug.showWindow');
-        include __DIR__ . '/include/debug.tpl.php';
+        // 显示调试页面
+        $debugWindowPath = Configure::get('_debug.userWindow');
+        if (empty($debugWindowPath)) {
+            $debugWindowPath = dirname(dirname(__DIR__)) . '/page/debug.tpl.php';
+        }
+        if (is_file($debugWindowPath)) {
+            $openWindow = Configure::get('_debug.showWindow');
+            include $debugWindowPath;
+        }
     }
 
     /**

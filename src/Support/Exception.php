@@ -12,14 +12,7 @@ namespace Peas\Support;
 class Exception extends \Exception
 {
     /**
-     * 存储未捕获到的异常
-     *
-     * @var array
-     */
-    public static $exceptions = [];
-
-    /**
-     * 日志写入类，设置了之后，未捕获的异常、调用printToLog方法、printTraceToLog方法可以将异常写入日志
+     * 日志写入类，设置了之后，调用printToLog方法、printTraceToLog方法可以将异常写入日志
      *
      * @var Psr\Log\LoggerInterface
      */
@@ -101,18 +94,6 @@ class Exception extends \Exception
     public static function setLogger($logger)
     {
         self::$_logger = $logger;
-    }
-
-    /**
-     * 自定义捕捉异常方法，可用于捕捉未使用try...catch捕获的异常
-     *
-     * @param  \Exception $e
-     * @return void
-     */
-    public static function handler(\Exception $e)
-    {
-        array_push(self::$exceptions, $e);
-        self::printToLog($e);
     }
 
     /**

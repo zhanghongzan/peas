@@ -47,6 +47,11 @@ class DefaultConfig
             '_exception.log.open' => true,                                 // 日志开关，是否记录到日志
 
 
+            /* 404、500页面设置 */
+            '_404.page' => dirname(dirname(dirname(__DIR__))) . '/page/404.tpl.php', // 404页面
+            '_500.page' => dirname(dirname(dirname(__DIR__))) . '/page/500.tpl.php', // 500页面
+
+
             /* 模板引擎设置 */
             '_template.templateDir' => _PATH . '/resources/views',         // 模板文件目录
             '_template.compileDir'  => _PATH . '/storage/framework/views', // 编译文件目录
