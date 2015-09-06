@@ -16,45 +16,12 @@ use Peas\Config\Configure;
 class Controller
 {
     /**
-     * 模板引擎实例
-     *
-     * @var CornTemplate
-     */
-    protected $_t = null;
-
-    /**
      * 缓存有效期设置
      *
      * @var array 格式：'方法名=>缓存时间'
      */
-    protected $_cacheLife = [];
+    public $cacheLife = [];
 
-
-    /**
-     * 系统初始化，如果读取了缓存则返回true，未读取缓存则返回false
-     *
-     * @return boolean
-     */
-    public function peasInit()
-    {
-        $this->_t = ActionContext::$template;
-
-        // 调用初始化方法
-        if (method_exists($this, '_init')) {
-            $this->_init();
-        }
-        // 检查是否可以直接读取缓存
-        if (isset($this->_cacheLife[ActionContext::$method])) {
-            if ($this->_t->isCached(ActionContext::$view, ActionContext::$cacheId, $this->_cacheLife[ActionContext::$method])) {
-                $this->_t->display(ActionContext::$view, ActionContext::$cacheId, $this->_cacheLife[ActionContext::$method]);
-                return true;
-            }
-        } else if ($this->_t->isCached(ActionContext::$view, ActionContext::$cacheId)) {
-            $this->_t->display(ActionContext::$view, ActionContext::$cacheId);
-            return true;
-        }
-        return false; // 没有读取缓存则返回false
-    }
 
     /**
      * 加载模板
@@ -64,15 +31,15 @@ class Controller
      * @param  int    $cacheLife 缓存有效期（秒），不指定则使用系统默认配置，如果模板地址和本参数同时未设置，则自动检查默认模板配置的缓存有效期
      * @return void
      */
-    protected function _display($template = '', $cacheId = NULL, $cacheLife = NULL)
+    protected function _display($template = '', $cacheId = null, $cacheLife = null)
     {
         $this->_assign('_c', Configure::get());
         if (empty($template)) {
             $template = ActionContext::$view;
-            $cacheLife = (isset($this->_cacheLife[ActionContext::$method]) && $cacheLife === null) ? $this->_cacheLife[ActionContext::$method] : $cacheLife;
+            $cacheLife = (isset($this->cacheLife[ActionContext::$method]) && $cacheLife === null) ? $this->cacheLife[ActionContext::$method] : $cacheLife;
         }
         $cacheId = $cacheId === null ? ActionContext::$cacheId : $cacheId;
-        $cacheLife === null ? $this->_t->display($template, $cacheId) : $this->_t->display($template, $cacheId, $cacheLife);
+        $cacheLife === null ? ActionContext::$template->display($template, $cacheId) : ActionContext::$template->display($template, $cacheId, $cacheLife);
     }
 
     /**
@@ -84,7 +51,7 @@ class Controller
      */
     protected function _assign($varName, $varValue = '')
     {
-        $this->_t->assign($varName, $varValue);
+        ActionContext::$template->assign($varName, $varValue);
     }
 
     /**
@@ -94,7 +61,7 @@ class Controller
      */
     protected function _clearAllAssign()
     {
-        $this->_t->clearAllAssign();
+        ActionContext::$template->clearAllAssign();
     }
 
     /**
@@ -105,7 +72,7 @@ class Controller
      */
     protected function _getAssign($varName = '')
     {
-        return $this->_t->getAssign($varName);
+        return ActionContext::$template->getAssign($varName);
     }
 
     /**
@@ -116,7 +83,7 @@ class Controller
      */
     protected function _clearAssign($varName)
     {
-        $this->_t->clearAssign($varName);
+        ActionContext::$template->clearAssign($varName);
     }
 
     /**

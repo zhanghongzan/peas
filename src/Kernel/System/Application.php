@@ -74,14 +74,22 @@ class Application
             $template->assign($_POST);
             $template->assign($_GET);
             $template->display(ActionContext::$view);
+
         } else {
             $method = ActionContext::$method;
             $controllerClass = new $controller();
-            if (!(method_exists($controllerClass, 'peasInit') && $controllerClass->peasInit())) {
+            // 调用初始化方法
+            if (method_exists($controllerClass, '_init')) {
+                $controllerClass->_init();
+            }
+            // 检查是否可以直接读取缓存
+            $cacheLife = isset($controllerClass->cacheLife[$method]) ? $controllerClass->cacheLife[$method] : CornTemplate::CACHELIFE_DEFAULT;
+            if (ActionContext::$template->isCached(ActionContext::$view, ActionContext::$cacheId, $cacheLife)) {
+                ActionContext::$template->display(ActionContext::$view, ActionContext::$cacheId, $cacheLife);
+            } else {
                 $controllerClass->{$method}();
             }
         }
-
         // 记录缓存数据
         if (_MODE == 'work' && empty($cache)) {
             Runtime::buildAction($url, $cachePath);
