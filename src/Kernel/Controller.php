@@ -2,7 +2,6 @@
 namespace Peas\Kernel;
 
 use Peas\Kernel\System\ActionContext;
-use Peas\View\CornTemplate;
 use Peas\Config\Configure;
 
 /**
