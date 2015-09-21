@@ -35,9 +35,9 @@ class Aes
      */
     private static $_modeInfo = [
         'cipher' => [
-            '_128' => MCRYPT_RIJNDAEL_128,
-            '_192' => MCRYPT_RIJNDAEL_192,
-            '_256' => MCRYPT_RIJNDAEL_256,
+            '128' => MCRYPT_RIJNDAEL_128,
+            '192' => MCRYPT_RIJNDAEL_192,
+            '256' => MCRYPT_RIJNDAEL_256,
         ],
         'mode' => [
             'cbc'    => MCRYPT_MODE_CBC,
@@ -104,7 +104,7 @@ class Aes
      */
     public function encode($data, $key = null, $iv = null)
     {
-        $cipher  = self::$_modeInfo['cipher']['_' . $this->getConfig('blockSize')];
+        $cipher  = self::$_modeInfo['cipher'][$this->getConfig('blockSize')];
         $padding = self::$_modeInfo['padding'][strtolower($this->getConfig('padding'))];
         $mode    = self::$_modeInfo['mode'][$this->getConfig('mode')];
 
@@ -125,7 +125,7 @@ class Aes
      */
     public function decode($data, $key = null, $iv = null)
     {
-        $cipher  = self::$_modeInfo['cipher']['_' . $this->getConfig('blockSize')];
+        $cipher  = self::$_modeInfo['cipher'][$this->getConfig('blockSize')];
         $padding = self::$_modeInfo['padding'][strtolower($this->getConfig('padding'))];
         $mode    = self::$_modeInfo['mode'][$this->getConfig('mode')];
         $key     = empty($key) ? $this->getConfig('key') : $key;
