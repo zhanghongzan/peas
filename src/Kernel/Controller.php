@@ -42,6 +42,17 @@ class Controller
     }
 
     /**
+     * 输出响应字符串，在echo之前会设置header编码
+     *
+     * @param string $text
+     */
+    protected function _echo($text)
+    {
+        header('Content-Type: text/html; charset=' . Configure::get('_default.charset'));
+        echo $text;
+    }
+
+    /**
      * 模板变量赋值，只有使用此函数赋值的变量才能够在模板中访问
      *
      * @param  string|array $varName  变量名称或者包含多个变量的数组，peas为系统保留名，不允许赋值

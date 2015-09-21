@@ -16,6 +16,7 @@ class DefaultConfig
         return [
             /* 常规设置  */
             '_default.timezone' => 'PRC',                                 // 默认时区
+            '_default.charset'  => 'UTF-8',                               // 默认编码
 
 
             /* 缓存默认设置，CacheCenter */
