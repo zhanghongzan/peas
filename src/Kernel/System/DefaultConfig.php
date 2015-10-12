@@ -19,6 +19,15 @@ class DefaultConfig
             '_default.charset'  => 'UTF-8',                               // 默认编码
 
 
+            /* 缓存默认设置，CacheCenter */
+            '_cache.prefix'             => '',                            // key前缀
+            '_cache.defaultLifetime'    => 86400,                         // int -1表示永久有效
+            '_cache.defaultStore'       => 'file',                        // 默认存储器类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称
+            '_cache.defaultStoreConfig' => [                              // 默认存储器参数，没有可不传
+                'directory' => _PATH . '/storage/app/cache',
+            ],
+
+
             /* 日志默认设置 ，LogCenter */
             '_log.loggers'     => 'file',                                  // 启用的日志写入器，多个用','分开
             '_log.file.writer' => 'file',                                  // 指定写入器类型，自带file、syslog，支持自定义，但是自定义写入器需实现接口Peas\Log\Writer\WriterInterface，传入完整名称如：Peas\Log\Writer\FlieWriter
