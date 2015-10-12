@@ -1,5 +1,5 @@
 <?php
-namespace Peas\Crypt;
+namespace Peas\Crypt\Padding;
 
 /**
  * Peas Framework

@@ -2,6 +2,7 @@
 namespace Peas\Crypt;
 
 use Peas\Support\Traits\ConfigTrait;
+use Peas\Crypt\Padding\Padding;
 
 /**
  * Peas Framework
