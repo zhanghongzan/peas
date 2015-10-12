@@ -4,7 +4,7 @@ namespace Peas\Cache;
 /**
  * Peas Framework
  *
- * 缓存操作类，全局静态方法
+ * 缓存操作辅助类，全局静态方法
  *
  * 自定义存储器说明：<br>
  * 自定义存储器是指使用非peas自带存储器，需实现Peas\Cache\Store\StoreInterface接口，且确保能够自动加载<br>
@@ -13,7 +13,7 @@ namespace Peas\Cache;
  * @author  Hongzan Zhang <zhanghongzan@163.com>
  * @version $Id$
  */
-class CacheCenter
+class CacheHelper
 {
     /**
      * 默认配置

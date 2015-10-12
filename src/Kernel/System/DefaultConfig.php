@@ -19,7 +19,7 @@ class DefaultConfig
             '_default.charset'  => 'UTF-8',                               // 默认编码
 
 
-            /* 缓存默认设置，CacheCenter */
+            /* 缓存默认设置，CacheHelper */
             '_cache.prefix'             => '',                            // key前缀
             '_cache.defaultLifetime'    => 86400,                         // int -1表示永久有效
             '_cache.defaultStore'       => 'file',                        // 默认存储器类型，可以是apc,file,xCache，默认为apc，也可以是自定义存储器名称

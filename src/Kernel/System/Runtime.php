@@ -118,7 +118,7 @@ class Runtime
         if (!empty(Configure::get('_session'))) {
             $code .= '\Peas\Http\Session::setConfig(Peas\Config\Configure::get(\'_session\'));';
         }
-        $code .= '\Peas\Cache\CacheCenter::init(Peas\Config\Configure::get(\'_cache\'));';
+        $code .= '\Peas\Cache\CacheHelper::init(Peas\Config\Configure::get(\'_cache\'));';
         $code .= '\Peas\Log\LogCenter::init(Peas\Config\Configure::get(\'_log\'));';
         $code .= '\Peas\Kernel\System\SystemHandler::init();';
         return $code;
