@@ -4,6 +4,11 @@ namespace Peas\Kernel\Helper;
 use Peas\Crypt\Aes;
 use Peas\Config\Configure;
 
+/**
+ * AES加密辅助类，可以在配置文件中配置密钥，配置名称：aes.pwd.版本号，其中，默认配置版本号为df即aes.pwd.df
+ *
+ * @author kevin
+ */
 class AesHelper
 {
     /**
@@ -21,17 +26,69 @@ class AesHelper
     private static $_ecb = null;
 
 
-    public static function ecbEncode()
-    {}
+    /**
+     * ecb模式加密
+     *
+     * @param  string $data 待加密数据
+     * @param  string $kv   密钥版本号，不设置使用默认密钥
+     * @return string
+     */
+    public static function ecbEncode($data, $kv = null)
+    {
+        if ($kv !== null) {
+            return self::_getDefaultEcb()->encode($data, Configure::get('aes.pwd.' . $kv));
+        }
+        return self::_getDefaultEcb()->encode($data);
+    }
 
-    public static function ecbDecode()
-    {}
+    /**
+     * ecb模式解密
+     *
+     * @param  string $data 待解密数据
+     * @param  string $kv   密钥版本号，不设置使用默认密钥
+     * @return string
+     */
+    public static function ecbDecode($data, $kv = null)
+    {
+        if ($kv !== null) {
+            return self::_getDefaultEcb()->decode($data, Configure::get('aes.pwd.' . $kv));
+        }
+        return self::_getDefaultEcb()->decode($data);
+    }
 
-    public static function cbcEncode()
-    {}
 
-    public static function cbcDecode()
-    {}
+    /**
+     * cbc模式加密
+     *
+     * @param  string $data 待加密数据
+     * @param  string $iv   IV
+     * @param  string $kv   密钥版本号，不设置使用默认密钥
+     * @return string
+     */
+    public static function cbcEncode($data, $iv, $kv = null)
+    {
+        if ($kv !== null) {
+            return self::_getDefaultCbc()->encode($data, Configure::get('aes.pwd.' . $kv), $iv);
+        }
+        return self::_getDefaultCbc()->encode($data, null, $iv);
+    }
+
+    /**
+     * cbc模式解密
+     *
+     * @param  string $data 待解密数据
+     * @param  string $iv   IV
+     * @param  string $kv   密钥版本号，不设置使用默认密钥
+     * @return string
+     */
+    public static function cbcDecode($data, $iv, $kv = null)
+    {
+        if ($kv !== null) {
+            return self::_getDefaultCbc()->decode($data, Configure::get('aes.pwd.' . $kv), $iv);
+        }
+        return self::_getDefaultCbc()->decode($data, null, $iv);
+    }
+
 
     /**
      * 生成IV
